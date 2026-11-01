@@ -1,0 +1,239 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+11:07:34 | INFO: Starting glTF 2.0 export
+11:07:34 | INFO: Extracting primitive: Arc gallery aperture.004
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Arc gallery aperture.005
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Arc gallery aperture.006
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Arc gallery aperture.007
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Arc gallery aperture.008
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Arc gallery aperture.009
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cylinder
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Command bridge dark pressure base
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Command bridge faceted top
+11:07:34 | INFO: Primitives created: 2
+11:07:34 | INFO: Extracting primitive: Continuous inhabited outer rail.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Crescent radial compression rib.003
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Crescent radial compression rib.004
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Crescent radial compression rib.005
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Crescent radial compression rib.006
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Crescent radial compression rib.007
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.002
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Habitat roof bay
+11:07:34 | INFO: Primitives created: 2
+11:07:34 | INFO: Extracting primitive: Habitat roof bay.001
+11:07:34 | INFO: Primitives created: 2
+11:07:34 | INFO: Extracting primitive: Torus
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cylinder.002
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cylinder.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Torus.002
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cone
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Torus.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cone.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Inboard dark pressure gallery.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.039
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.040
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Upper crescent deep pressure keel.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Upper crescent faceted armor.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Upper crescent recessed pressure gallery.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Upper crescent slate flank.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Finished glTF 2.0 export in 0.09563803672790527 s
+
+EXPORTED auto_explore /workspace/space_idle/space-battleship/assets/planets/facilities_v9/auto_explore.glb
+11:07:34 | INFO: Starting glTF 2.0 export
+11:07:34 | INFO: Extracting primitive: Arc gallery aperture
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Arc gallery aperture.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Arc gallery aperture.002
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Arc gallery aperture.003
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cylinder.004
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.003
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.006
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Continuous inhabited outer rail
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.041
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.042
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.043
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Crescent radial compression rib
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Crescent radial compression rib.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Crescent radial compression rib.002
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.004
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.007
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Heat throat integrated housing
+11:07:34 | INFO: Primitives created: 2
+11:07:34 | INFO: Extracting primitive: Heat throat tapered shield
+11:07:34 | INFO: Primitives created: 2
+11:07:34 | INFO: Extracting primitive: Torus.003
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Inboard dark pressure gallery
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Torus.004
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Torus.005
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.005
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.008
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.009
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cylinder.003
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Upper crescent deep pressure keel
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Upper crescent faceted armor
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Upper crescent recessed pressure gallery
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Upper crescent slate flank
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Finished glTF 2.0 export in 0.06904220581054688 s
+
+EXPORTED refinery /workspace/space_idle/space-battleship/assets/planets/facilities_v9/refinery.glb
+11:07:34 | INFO: Starting glTF 2.0 export
+11:07:34 | INFO: Extracting primitive: Cube.021
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.022
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.023
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.024
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.019
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.020
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Manufacturing inner dark work gallery
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.011
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.015
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Manufacturing occupied arc armor
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Manufacturing occupied arc keel
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Manufacturing pressure wall
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Manufacturing pressure wall.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.012
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.013
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.014
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.016
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.017
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.018
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Manufacturing sloping roof
+11:07:34 | INFO: Primitives created: 2
+11:07:34 | INFO: Extracting primitive: Manufacturing sloping roof.001
+11:07:34 | INFO: Primitives created: 2
+11:07:34 | INFO: Extracting primitive: Cube.010
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Finished glTF 2.0 export in 0.058203697204589844 s
+
+EXPORTED equipment /workspace/space_idle/space-battleship/assets/planets/facilities_v9/equipment.glb
+11:07:34 | INFO: Starting glTF 2.0 export
+11:07:34 | INFO: Extracting primitive: Cube.044
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.025
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Dock branch load root
+11:07:34 | INFO: Primitives created: 2
+11:07:34 | INFO: Extracting primitive: Dock branch load root.001
+11:07:34 | INFO: Primitives created: 2
+11:07:34 | INFO: Extracting primitive: Cube.029
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.033
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.028
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.032
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Dock occupied arc armor
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Dock occupied arc keel
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.034
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.026
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.030
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Torus.006
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.036
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.035
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.027
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.031
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Pointed shuttle nose beyond open clamp
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.037
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Cube.038
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Shuttle swept armored wing
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Extracting primitive: Shuttle swept armored wing.001
+11:07:34 | INFO: Primitives created: 1
+11:07:34 | INFO: Finished glTF 2.0 export in 0.060775041580200195 s
+
+EXPORTED shipyard /workspace/space_idle/space-battleship/assets/planets/facilities_v9/shipyard.glb
+Blender 4.3.2
+Read blend: "/workspace/space_idle/space-battleship/art_sources/planet_whole_concept_20261101/concept-v19.blend"
+
+Blender quit
