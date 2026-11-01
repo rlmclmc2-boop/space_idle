@@ -14,7 +14,9 @@ const FACILITY_ANGLES := {
 	"equipment": 0.78,
 	"shipyard": PI - 0.78,
 }
-const RADIUS := 4.5
+# Keep the common load path close to terrestrial globes while leaving the
+# four authored work nodes and their independent owned arc ends intact.
+const RADIUS := 4.35
 const REAR_TRANSIT_WIDTH := 0.50
 const FRONT_TRANSIT_WIDTH := 0.82
 const NODE_WIDTH := 1.30
