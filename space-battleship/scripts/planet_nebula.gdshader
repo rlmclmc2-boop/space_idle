@@ -34,9 +34,21 @@ void fragment() {
     // catch the light; avoid hard contour bands at page scale.
     float bright_wisp = smoothstep(0.56, 0.70,
         detail + value_noise(p * 13.0 + 41.0) * 0.15);
+    float fine_dust = value_noise(p * 29.0 + 57.0) * 0.58
+        + value_noise(p * 61.0 + 83.0) * 0.42;
+    vec2 star_cell = floor(UV * vec2(22.0, 12.0));
+    vec2 star_uv = fract(UV * vec2(22.0, 12.0));
+    vec2 star_center = vec2(hash21(star_cell + vec2(9.0, 4.0)),
+                            hash21(star_cell + vec2(3.0, 14.0)));
+    vec2 star_delta = star_uv - star_center;
+    float blue_star = smoothstep(0.975, 0.995, hash21(star_cell + vec2(23.0, 7.0)))
+        * exp(-dot(star_delta, star_delta) * 85.0) * envelope;
     float cloud = max(smoothstep(0.30, 0.59, detail), filament * 0.58);
     cloud = max(cloud, max(blue_vein * 0.54, bright_wisp * 0.46)) * envelope;
+    cloud *= 0.72 + fine_dust * 0.58;
     vec3 hue = mix(vec3(0.045, 0.14, 0.39), vec3(0.14, 0.46, 0.90), detail);
     hue = mix(hue, vec3(0.25, 0.75, 1.0), max(blue_vein, bright_wisp) * 0.46);
-    COLOR = vec4(hue, cloud * 0.86);
+    hue += vec3(0.015, 0.055, 0.09) * smoothstep(0.58, 0.80, fine_dust) * blue_vein;
+    hue = mix(hue, vec3(0.45, 0.88, 1.0), blue_star);
+    COLOR = vec4(hue, min(max(cloud * 0.86, blue_star * 0.84), 0.89));
 }
