@@ -4,8 +4,8 @@
 
 ## 当前版本
 
-- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `ad184682`，未合main。
-- 星球来源 `cb0b96f86`：facilities_v9四GLB、planet_facility_scene.gd、planet_orbital_spine.gd、planet_visual.gd七件接入。六件同blob；planet_visual仅加固态整组宽度包络适配。planet_panel统一关闭/展开主体安全区，保留e7591438的业务/UI修复。
+- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `79329163`，未合main。
+- 星球来源 `ccf596c4`：facilities_v9四GLB、planet_facility_scene.gd、planet_orbital_spine.gd六件接入并同blob。planet_visual保留公共固态整组宽度包络，planet_panel保留关闭/展开安全区及e7591438的业务/UI修复。
 - 反应堆当前已接入 `ba137938`（交接df1e6ad5）的十三件installation闭包，逐blob同源。公共主题9034af81、main e845装备、公共宿主/导航和战场空间保持。
 
 ## 星球当前整页与下一项
@@ -15,17 +15,16 @@
 - `8136cef8:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png`，右侧完整阶段。
 - `1eda07fd:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png`。
 
-当前证据：`archive/design-docs-before-cleanup-20261031@079134ad:modules/public-ui/planet-v24-original-shared-20261101/README.md`。五张1440×900原屏及同尺寸JPEG，总览/设施展开各6秒180连续帧、分片/哈希和两张原图同尺寸JPEG；具体源映射、显示适配补丁和作者整页判断均在同目录。
+当前证据：`archive/design-docs-before-cleanup-20261031@a01db75f:modules/public-ui/planet-v28-original-framing-shared-20261101/README.md`。五张1440×900原屏及同尺寸JPEG，总览/设施展开各6秒180连续帧及分片/哈希，两张原图同尺寸JPEG；源映射与作者整页判断均在同目录。
 
-接入和显示适配完成：整组同比适配顶部状态区与操作台之间的安全空间，两段当前动态内前侧船坞完整、主体不与导航或不同高度详情台相交。采证为受控星球1、探索240、征服/四设施已建，业务快照暂停，显示动画1×；MovieMaker离线固定30fps，不作实时性能或整周结论。
+当前横向椭圆、后弧遮挡与前弧间隔已接近原图，观测/热工主体和两个开放功能区形成区别。五页及两片所看时段内，主体与顶部状态区、不同台高和导航保持安全间距，无新裁切。受控星球1、探索240、征服/四设施已建，业务快照暂停、显示动画1×；MovieMaker固定30fps离线生成。
 
-当前仍是制作候选，不作用户确认稿。下一项交星球原组按原图完成主体：
+当前是可比较原图结构/比例的制作候选，材质与舱口完成度尚不宜作成品确认。星球原组下一项：
 
-1. 恢复低倾角横向椭圆及星体/前后弧的遮挡比例，当前后方大环仍高出星体、姿态偏直立。
-2. 以平整分段甲板、深侧壁/龙骨和节段接缝建立连续建筑带截面，收敛当前圆软起伏的鼓面。
-3. 观测平台/塔体、热处理穹顶及制造深腔形成主要功能体量，保留开放泊位负形；当前青橙小凸点和浅栏不足以替代原图设施体积。
+1. 保留共同曲率、朝向和整体比例，把弧段亮面收成明确的顶面/倒角/深侧壁截面，节段接缝对应装甲结构，收敛鼓起曲面及锯齿折痕，不靠新增噪声或黑线。
+2. 保留两处开放舱口负形，完成门柱/上梁/舱底/侧壳的承托连接及端部封边。当前泊位和制造区域仍偏细杆骨架，前侧深壳端部偏薄尖片；需形成建筑带内的功能空间，而不封死开口或增添新功能。
 
-整体保留当前公共安全区及UI修复，消费原组下一固定资产后看完整整页与受影响动态；不通过独立缩建筑、裁切或挤战场解决原图比例。
+整体保留现有公共安全区和UI修复，消费下一固定资产后按完整整页和受影响动态判断，不新增战场/公共布局变更。
 
 ## 反应堆当前同壳判断
 
@@ -39,4 +38,4 @@
 
 ## 独立剩余项
 
-反应堆接收端按上节具体制作要求等原组固定修订后接入；星球按上述主体资产要求继续。当前无新增明确公共控件缺陷，不新增无依据微调、独立复测或main合并。
+反应堆接收端按上节具体制作要求等原组固定修订后接入；星球按上述装甲截面与舱口承托要求继续。当前无新增明确公共控件缺陷，不新增无依据微调、独立复测或main合并。
