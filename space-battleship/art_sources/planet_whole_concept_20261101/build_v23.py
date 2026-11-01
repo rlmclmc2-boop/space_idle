@@ -751,11 +751,6 @@ box("Dock portal recessed soffit",(0,-.64,1.28),
     (.95,.075,.08),KEEL,shipyard,.01)
 for side in (-1,1):
     beam("Dock entrance service pod upright",(side*.85,-.39,.34),(side*.85,-.39,1.29),.18,.19,ARMOR,shipyard)
-for a in (-146,-119):
-    owned_arc(shipyard,"Dock armored entry threshold",a,a+2.2,
-              4.08,5.29,.33,1.03,ARMOR_SIDE)
-    owned_arc(shipyard,"Dock threshold ivory shoulder",a,a+2.2,
-              4.18,5.18,1.02,1.13,ARMOR)
 box("Docked shuttle fuselage",(0,-1.33,.91),(.61,1.30,.22),ARMOR_FACE,shipyard,.04)
 armor_prism("Docked shuttle swept nose",[(0,-2.30),(.31,-1.84),(-.31,-1.84)],.85,1.04,ARMOR_FACE,shipyard)
 box("Docked shuttle canopy",(0,-1.42,1.045),(.33,.44,.06),GLASS,shipyard,.01)
@@ -875,7 +870,6 @@ for child in list(shipyard.children):
     if child==shipyard_shell or child.name.startswith((
             "Fine orbital pressure web","Fine ivory rail head",
             "Orbital tram guide","Orbital track joint clamp",
-            "Dock armored entry threshold","Dock threshold ivory shoulder",
             "Low flush front attitude collar","Front attitude cyan inset")):
         continue
     world_matrix=child.matrix_world.copy()
