@@ -1,0 +1,189 @@
+{
+  "runtime_source": "8555877468cc230794ff776a0b32d2497bbf32fb",
+  "planet_fixed_handoff": "3595f0a0ddd29f41765eefc0c04dd5b783f33815",
+  "planet_runtime_lineage": "c9eec510",
+  "model_source": "42304cfd",
+  "incoming_blobs": [
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/auto_explore.glb",
+      "blob": "c2ea80b38456c64c9f9d9ed31d119885010cb51c"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/equipment.glb",
+      "blob": "29f453f8317d8a0deeb091b083269d0fb5a8e52b"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/refinery.glb",
+      "blob": "bc95709182f4a8eccb89da92c9c268eb1098dfa2"
+    },
+    {
+      "path": "space-battleship/assets/planets/facilities_v8/shipyard.glb",
+      "blob": "16b712ed7ec4fe06ec9cd0aade910a496ea85479"
+    },
+    {
+      "path": "space-battleship/scripts/planet_facility_scene.gd",
+      "blob": "66d777c992348a5db9e80210baf58cd0222772cd"
+    },
+    {
+      "path": "space-battleship/scripts/planet_orbital_spine.gd",
+      "blob": "f93e3fcd62d4bc6f39bcff800913c96144566b49"
+    }
+  ],
+  "preserved_runtime_blobs": {
+    "space-battleship/src/main.gd": "c724b18e788059b5c48e173b0415153d9a8e0474",
+    "space-battleship/src/ui/zone_shell.gd": "456e502ca77aadf44f7775359a6f0bb9af683a41",
+    "space-battleship/src/ui/bridge_theme.gd": "2783fad5744a78ad026bb5115141131ad76c463e",
+    "space-battleship/src/ui/planet_panel.gd": "47e7214462a1f239694846bfc85050aa8bc73152",
+    "space-battleship/src/ui/equipment_panel.gd": "77943faafd9ffe09895e4bab1ddc5d3c0dac7119"
+  },
+  "state": "受控星球1／探索240／征服／四设施已建",
+  "movie": {
+    "method": "Godot --fixed-fps30 --write-movie; speed1; offline render",
+    "frames": 180,
+    "fps": 30,
+    "duration_seconds": 6,
+    "segment": {
+      "end_process_frame": 306,
+      "fps": 30,
+      "method": "Godot MovieMaker fixed30fps offline; full shared main scene",
+      "simulated_seconds": 6,
+      "speed": 1,
+      "start_process_frame": 126
+    },
+    "raw_avi_sha256": "c5d181b480ffb8ae3f5cb5a65f1432f9946c70042f1560a83818c34bfe64f93b",
+    "encoding": "ffmpeg trim start126/end306; libx264 crf20 yuv420p cfr30; no interpolation"
+  },
+  "integration_status": "结构已接入，投影间隔及材质层次仍需制作",
+  "media": [
+    {
+      "path": "planet-overview.png",
+      "bytes": 984008,
+      "sha256": "72e1822e7beb5af3e3cd47c9a832ada36b4c551e58131dd91755a4d796aeecec"
+    },
+    {
+      "path": "planet-overview.jpg",
+      "bytes": 448543,
+      "sha256": "c1c8e926ea1c018b29cb7588962f913bd5cbb78ee0b52dffb898223e2a706e81"
+    },
+    {
+      "path": "planet-facilities.png",
+      "bytes": 888161,
+      "sha256": "68d9d4ca98417fb3a9cdc353c9a0f3e237e5852e8129d518b6a4bf6eab8c171f"
+    },
+    {
+      "path": "planet-facilities.jpg",
+      "bytes": 433404,
+      "sha256": "1735a6efe978fe6d168d1902b2516f51f27c367349664e434b5edd58bf575874"
+    },
+    {
+      "path": "planet-crew.png",
+      "bytes": 842466,
+      "sha256": "2493855f1a0a83ee582a4459325ab12286a0e1a7e606c90942118e28ca13b059"
+    },
+    {
+      "path": "planet-crew.jpg",
+      "bytes": 423778,
+      "sha256": "b31046a98dc8814b297081be9f6287024870bd6a647a188175c5a98174bc3233"
+    },
+    {
+      "path": "planet-conquest-expanded.png",
+      "bytes": 827852,
+      "sha256": "ea797bfdf98d72ffb7c3d2c367021871841e67bba8dd64043aeeca7041c462e8"
+    },
+    {
+      "path": "planet-conquest-expanded.jpg",
+      "bytes": 410636,
+      "sha256": "bb4af96ac89b4b8bfa8a740201e965d531c974351e4e974c2871e5531d90d975"
+    },
+    {
+      "path": "driver.gd",
+      "bytes": 4037,
+      "sha256": "58ca86658966529a185fd00dd88ab3e07df26acbd06b81193208567bd37282d5"
+    },
+    {
+      "path": "run.log",
+      "bytes": 1048,
+      "sha256": "f1ea7661e77af8f767edd55974712c213e2efc4f3dcfcb1ddcd18868cd0dc6e2"
+    },
+    {
+      "path": "import.log",
+      "bytes": 4213,
+      "sha256": "91eaa6a435f21375ab17db1f791fcf62c3dad4c465a970995997ef569ea82af3"
+    },
+    {
+      "path": "movie-segment.json",
+      "bytes": 188,
+      "sha256": "10a2cbb6383947e59480b7c6b314b15deb0e97ff463699bd7427cab2472f8c92"
+    },
+    {
+      "path": "video-parts.json",
+      "bytes": 571,
+      "sha256": "8ddb24670055daa6f3a38cf58f6e4980ee05a60fb1427358086addbd7bab1ead"
+    },
+    {
+      "path": "planet-v16-shared-1x-6s.mp4",
+      "bytes": 984063,
+      "sha256": "cc87481df8f1e33f5a16bf354dc8a91e4eb6fbe01bf988ae45d490031a4c8ce2"
+    },
+    {
+      "path": "video-parts/part-001.bin",
+      "bytes": 328703,
+      "sha256": "3d81c536a2947c43c2f6b93d35a7e21a98571aa172aa3839a973a0a719fa696d"
+    },
+    {
+      "path": "video-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "abbf32bbaaea0b5c780d7b4401fc13a8909fa4f20020f508feacd0b8021b6ce2"
+    },
+    {
+      "path": "motion-review-6.jpg",
+      "bytes": 545722,
+      "sha256": "68082fab2b91eef39d05842f0e6931da76f1d1ec9dacf511a0202865ffec144e"
+    },
+    {
+      "path": "motion-review-5.jpg",
+      "bytes": 546263,
+      "sha256": "85db82664ac0a4ed2afa2eba2fbbdf8e01e5196e4b0e24210b32ec85d9d7b7b2"
+    },
+    {
+      "path": "motion-review-4.jpg",
+      "bytes": 546445,
+      "sha256": "4f980917dcfbf2a38ffcce1a6802301c711850910d79271dc1d5ad0a2e27f8c4"
+    },
+    {
+      "path": "motion-review-3.jpg",
+      "bytes": 546420,
+      "sha256": "ff8fe1e501e2d1e4cbf6c41d235f74f0da5fe94aca2e49ed9d545fce6fddb668"
+    },
+    {
+      "path": "motion-review-2.jpg",
+      "bytes": 545957,
+      "sha256": "8b1944892b8f32342e8d1336e451f9dc5945bf96dfd1bbcf9b8a26a5fd6bef86"
+    },
+    {
+      "path": "motion-review-1.jpg",
+      "bytes": 547429,
+      "sha256": "b33c087846e0327fe7f882c240e3f9e72645d0cc7e91ac6d300f1d2157d40545"
+    },
+    {
+      "path": "motion-keyframes/frame-001.jpg",
+      "bytes": 134707,
+      "sha256": "0c5727fa70ef586df07cfbcfd617d82bf11a3366db07585723aa15023c9e800f"
+    },
+    {
+      "path": "motion-keyframes/frame-091.jpg",
+      "bytes": 137075,
+      "sha256": "f4169f08db2a3d14f6dae01e49b56d273ab60aac5fe2a1c010ff09e864740188"
+    },
+    {
+      "path": "motion-keyframes/frame-180.jpg",
+      "bytes": 138839,
+      "sha256": "22a3e8d72d89216578de1996cbc12c3799a65e1518e1f83a35160ef39d33cd4e"
+    },
+    {
+      "path": "author-review.md",
+      "bytes": 2089,
+      "sha256": "f198a8ec296ae505eeafe9a0f9b5e71281300392b247218af34747cc16313544"
+    }
+  ]
+}
