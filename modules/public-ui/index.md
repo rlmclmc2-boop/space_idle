@@ -109,3 +109,5 @@
 - 新批准细环星球中间版 `a2cba044`：[planet-architecture-cloud-shared-20261101](planet-architecture-cloud-shared-20261101/README.md)。
 
 - 新批准细环星球中间版 `34836efd`：[planet-material-light-shared-20261101](planet-material-light-shared-20261101/README.md)。
+
+- 同版反应堆材质/星球端接 `b43a3da6`：[reactor-material-planet-couplers-shared-20261101](reactor-material-planet-couplers-shared-20261101/README.md)。
