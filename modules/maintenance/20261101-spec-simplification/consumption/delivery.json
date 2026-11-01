@@ -1,0 +1,76 @@
+{
+  "equipment": {
+    "source_branch": "art/equipment-materials-main-20261029",
+    "source": "f3f43f247260e7a1587e8c65eae91b6159cb5fc1",
+    "branch": "docs/handoff-consumption-equipment-20261101",
+    "commit": "8e155d340ac71fd584ace639cadc29ee2d1faecf",
+    "paths": [
+      "space-battleship/docs/game-design/11-stage6-contract.md"
+    ],
+    "consumed": false
+  },
+  "reactor": {
+    "source_branch": "implement/reactor-centered-godot",
+    "source": "966a9132569d52ce9a1e641c1845f69c091a8371",
+    "branch": "docs/handoff-consumption-reactor-20261101",
+    "commit": "27cb13ffe7b25bd62a8911503fcf8c25e3c0544a",
+    "paths": [
+      "space-battleship/docs/game-design/11-stage6-contract.md",
+      "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md"
+    ],
+    "consumed": false
+  },
+  "host": {
+    "source_branch": "design/clear-zone-host",
+    "source": "b569f0e9d0728e13dc8af798149026cc94f004cf",
+    "branch": "docs/handoff-consumption-host-20261101",
+    "commit": "9bb91c23e2c989e57d83ff1337eddb417cd5e543",
+    "paths": [
+      "space-battleship/docs/game-design/11-stage6-contract.md"
+    ],
+    "consumed": false
+  },
+  "planet": {
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "f0205036961c3b6566882ae379d8d35f4e30ea76",
+    "branch": "docs/handoff-consumption-planet-20261101",
+    "commit": "0f2e4fddbb36160e13820a0e87173e4742743889",
+    "paths": [
+      "space-battleship/docs/game-design/11-stage6-contract.md",
+      "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md",
+      "space-battleship/docs/verification/planet-single-side-godot/restore.md"
+    ],
+    "consumed": false
+  },
+  "backend": {
+    "source_branch": "feat/amount-safe-previews",
+    "source": "90e22ac9f36a411e222eb286691a1cf2d39f2fb8",
+    "branch": "docs/handoff-consumption-backend-20261101",
+    "commit": "07e68507df06f499d9267dba584fd53da0179aef",
+    "paths": [
+      "space-battleship/docs/game-design/11-stage6-contract.md"
+    ],
+    "consumed": false
+  },
+  "cleanup": {
+    "source_branch": "docs/design-entry-cleanup-20261031",
+    "source": "91c5946dd54b2702e5dc5958c3e6666569f80509",
+    "branch": "docs/design-entry-cleanup-20261031",
+    "commit": "47536e1ec5ee7d5175de5065538b42e0aeb52dfd",
+    "paths": [
+      "space-battleship/docs/game-design/11-stage6-contract.md",
+      "space-battleship/docs/maintenance/HANDOFF.md"
+    ],
+    "consumed": true
+  },
+  "main": {
+    "source_branch": "main",
+    "source": "dd8b1f6a72305a7a450e05938a231998e7c3fbc4",
+    "branch": "docs/handoff-consumption-main-20261101",
+    "commit": "622688863e10ba7e6bc7341b6dd776b8d5c1762f",
+    "paths": [
+      "space-battleship/docs/game-design/11-stage6-contract.md"
+    ],
+    "consumed": true
+  }
+}

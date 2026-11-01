@@ -1,0 +1,41 @@
+{
+  "equipment": {
+    "source": "f3f43f247260e7a1587e8c65eae91b6159cb5fc1",
+    "identical": 40,
+    "different": [],
+    "missing": []
+  },
+  "reactor": {
+    "source": "966a9132569d52ce9a1e641c1845f69c091a8371",
+    "identical": 40,
+    "different": [
+      "space-battleship/docs/verification/reactor-centered-godot/evidence/b01-redesign/HANDOFF.md"
+    ],
+    "missing": []
+  },
+  "host": {
+    "source": "203f21380ca9d242a106df5932d496ea6834a0c3",
+    "identical": 38,
+    "different": [
+      "space-battleship/docs/game-design/11-stage6-contract.md",
+      "space-battleship/docs/ui-redesign-plan/shared-host-shell/runtime-clear-zone/HANDOFF.md"
+    ],
+    "missing": []
+  },
+  "backend": {
+    "source": "90e22ac9f36a411e222eb286691a1cf2d39f2fb8",
+    "identical": 43,
+    "different": [],
+    "missing": []
+  },
+  "planet": {
+    "source": "f0205036961c3b6566882ae379d8d35f4e30ea76",
+    "identical": 38,
+    "different": [
+      "space-battleship/docs/verification/planet-single-side-godot/restore.md",
+      "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/HANDOFF.md",
+      "space-battleship/docs/verification/planet-single-side-godot/visual-r17-curved-spine/README.md"
+    ],
+    "missing": []
+  }
+}
