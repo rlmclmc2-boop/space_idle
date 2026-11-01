@@ -55,7 +55,8 @@
       "insert_depth": 45
     },
     "core_marker": "core/power_out_single_smelting",
-    "device_marker": "smelting/power_in_smelting"
+    "device_marker": "smelting/power_in_smelting",
+    "receiver_u": 0.6639777101649988
   },
   "console": {
     "1": {
@@ -389,7 +390,8 @@
         -0.23602119088172913
       ],
       "device_marker": "weapons/power_in_weapons",
-      "core_marker": "core/power_out_weapons"
+      "core_marker": "core/power_out_weapons",
+      "receiver_u": 0.7625998771699141
     },
     "defence": {
       "interface_center_source3d": [
@@ -426,7 +428,8 @@
         -0.18490006029605865
       ],
       "device_marker": "defence/power_in_defence",
-      "core_marker": "core/power_out_defence"
+      "core_marker": "core/power_out_defence",
+      "receiver_u": 0.8155819769736391
     },
     "smelting": {
       "interface_center_source3d": [
@@ -463,7 +466,8 @@
         -0.19481956958770752
       ],
       "device_marker": "smelting/power_in_smelting",
-      "core_marker": "core/power_out_smelting"
+      "core_marker": "core/power_out_smelting",
+      "receiver_u": 0.8140655399164564
     },
     "condensation": {
       "interface_center_source3d": [
@@ -500,9 +504,10 @@
         -0.19865262508392334
       ],
       "device_marker": "condensation/power_in_condensation",
-      "core_marker": "core/power_out_condensation"
+      "core_marker": "core/power_out_condensation",
+      "receiver_u": 0.741743858503072
     }
   },
-  "generator_sha256": "69b212df3e48cdddc070d94c54f8b35346f0f3339dfe9ea581991451a88df398",
-  "asset_sha256": "7e7173778010c7f7aa5bb66ca426bfeea053cfcc04d475719f34594dda49da51"
+  "generator_sha256": "0f7ba99301d0dcaba4ce87434ad30b74be2f93986be3a74c5253aa53a1c3210a",
+  "asset_sha256": "697d94f57fa462ec84edb7af45a4611defb2c10c6f30094378f00ff0120915c2"
 }
