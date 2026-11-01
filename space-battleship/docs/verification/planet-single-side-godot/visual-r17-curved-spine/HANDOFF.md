@@ -4,12 +4,12 @@
 
 ## 现场
 
-源码分支`wip/planet-thread-resume-20261101@cb0b96f86`。`art_sources/planet_whole_concept_20261101/build_v23.py`、`concept-v23.blend`、`export_v23.py`与`assets/planets/facilities_v9/`四件GLB为当前同版资产。四段以共同轨道坐标接合；原业务、UI、运动枢轴和独立建造接口保留。
+源码分支`wip/planet-thread-resume-20261101@f7086c13`。`art_sources/planet_whole_concept_20261101/build_v23.py`、`concept-v23.blend`、`export_v23.py`与`assets/planets/facilities_v9/`四件GLB为当前同版资产。四段以共同轨道坐标接合；原业务、UI、运动枢轴和独立建造接口保留。
 
 ## 依据与证据
 
-制作原图为`8136cef8:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png`完整态右图和`1eda07fd`同目录`solid-integrated-spine-stages-closed.png`。当前实机归档`archive/planet-resume-20261101@803ca9459:v24-original-stage-return-cb0b96f8/`含Godot4.7.2公共整页、四阶段、6秒正常速度动态和构建运行日志。四设施全建状态为内存视觉夹具，不代表自然解锁。
+制作原图为`8136cef8:space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png`完整态右图和`1eda07fd`同目录`solid-integrated-spine-stages-closed.png`。当前实机归档`archive/planet-resume-20261101@4ef2234aa:v25-original-pose-f7086c13/`含Godot4.7.2公共整页、四阶段、6秒正常速度动态和构建运行日志。四设施全建状态为内存视觉夹具，不代表自然解锁。
 
 ## 当前一步
 
-宽实体环带已贯通，观察与热工节点嵌在后弧，制造槽与开放泊位嵌在前弧；船坞建成时补齐前弧、左侧回接和低姿态节点。作者已核当前整页、四段端面、球前间隔及动态运动件。下一步在公共宿主按原图并看整体比例、功能身份和材质完成度，针对具体差距继续制作。当前为实现候选，尚非用户验收或main合入授权。
+环带已调整为横向椭圆，后弧由星球遮挡，前弧有可辨认的顶面和侧壁。后方观察台恢复分层台座，热工节点恢复装甲金色穹顶；前方制造舱加入门架，船坞加入入口结构。作者已核同版整页、四阶段和正常速度动态。下一步在公共宿主按原图比较整体比例和材质层次，针对可见差距继续制作。当前为实现候选，尚非用户验收或main合入授权。
