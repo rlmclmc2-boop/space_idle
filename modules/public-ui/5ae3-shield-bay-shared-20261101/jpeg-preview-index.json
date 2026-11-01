@@ -1,0 +1,41 @@
+[
+  {
+    "source_commit": "691a92828e86b15766b8d8e23a83be0580f0bd98",
+    "runtime_source": "ec2cea75582c06f3fba696d87686d11680eaa329",
+    "png_path": "modules/public-ui/5ae3-shield-bay-shared-20261101/shared-zero-1440x900.png",
+    "png_sha256": "d59ccbcb7add00903a2b6d01ef20a7d513e57414c66cad2b26de0ddd87f25995",
+    "jpeg_path": "modules/public-ui/5ae3-shield-bay-shared-20261101/shared-zero-1440x900.jpg",
+    "jpeg_sha256": "98826fb131c8bc320f4cdd1105ebbab8cad213a931c82ebe933526e8995f6480",
+    "width": 1440,
+    "height": 900,
+    "bytes": 782975,
+    "quality": 97,
+    "subsampling": "4:4:4"
+  },
+  {
+    "source_commit": "691a92828e86b15766b8d8e23a83be0580f0bd98",
+    "runtime_source": "ec2cea75582c06f3fba696d87686d11680eaa329",
+    "png_path": "modules/public-ui/5ae3-shield-bay-shared-20261101/shared-loaded-1440x900.png",
+    "png_sha256": "53dbaaece25c56cc96cbd35e41298e055cefe5aaed57c5df281906b5cc6cfc9b",
+    "jpeg_path": "modules/public-ui/5ae3-shield-bay-shared-20261101/shared-loaded-1440x900.jpg",
+    "jpeg_sha256": "6557d274181fe44d47d44104ba2a11907aaa5a503878463e4aa58826e75096dd",
+    "width": 1440,
+    "height": 900,
+    "bytes": 799584,
+    "quality": 97,
+    "subsampling": "4:4:4"
+  },
+  {
+    "source_commit": "691a92828e86b15766b8d8e23a83be0580f0bd98",
+    "runtime_source": "ec2cea75582c06f3fba696d87686d11680eaa329",
+    "png_path": "modules/public-ui/5ae3-shield-bay-shared-20261101/equipment-return-1440x900.png",
+    "png_sha256": "15ca1cd9d5dd653dc0dbbd330c81c9fb0122be5e7e6bfc5e2da4e88b544e7705",
+    "jpeg_path": "modules/public-ui/5ae3-shield-bay-shared-20261101/equipment-return-1440x900.jpg",
+    "jpeg_sha256": "97d4265c03859c51a53bbc39009b393cd2a89b5f22fbbf45ef260f8eace28c79",
+    "width": 1440,
+    "height": 900,
+    "bytes": 643700,
+    "quality": 97,
+    "subsampling": "4:4:4"
+  }
+]
