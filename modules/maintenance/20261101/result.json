@@ -107,10 +107,6 @@
       "readback": "8e6d5af48db9384cdebd5add54c9754a0165d254"
     }
   },
-  "original_main_and_planet_final_refs": {
-    "feat/planet-single-side-ui": "acccaf4ccc5d75c92d8bf2e585b1b2df1479a259",
-    "main": "e845ca58afd39184c3d4c5743021480e393adf74"
-  },
   "local_file_links_checked": 2428,
   "local_file_link_missing": 0,
   "local_anchors_checked": 671,
@@ -126,17 +122,18 @@
   "remaining": {
     "main": {
       "status": "prepared_pushed_not_applied_to_main",
-      "reason": "保留根审后main接纳要求；本轮不合功能代码、不直接推进main",
+      "reason": "仍仅准备61bde20c，未根审、未实际清理main；本轮不直接推进main。",
       "commit": "61bde20c1d96167624379ceed41cb0293bb00119"
     },
     "planet": {
-      "status": "prepared_pushed_original_branch_untouched",
-      "reason": "已知原组持续WIP；已读到R114，但未读取其现场。原组消费时逐路径重核HEAD/blob并保最新入口，不整提交覆盖新制作。",
-      "commit": "0a606e5f6a4eee36446a7f843e1809ec4e6fa31e",
+      "status": "consumed_by_original_owner",
+      "reason": "原组已按固定候选实际消费并推送；两张批准图与站体脚本/blend/glb WIP保全由原组报告。不是整个星球或全仓验收完成。",
+      "commit": "c375d26ea80dd653f2b5ad068a220d9e48d36cba",
       "current_design_inputs_retained": [
         "space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png",
         "space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png"
-      ]
+      ],
+      "prepared_candidate": "0a606e5f6a4eee36446a7f843e1809ec4e6fa31e"
     },
     "uncertain_authoring_metadata": {
       "status": "retained",
@@ -152,5 +149,46 @@
       "status": "untouched",
       "reason": "所有源码、配置、实际资产、个人文件和WIP保持；公共壳仍运行预载的R5f件即使方案退役也未移出；没有跨工作区同步操作。"
     }
+  },
+  "initial_main_and_planet_refs_before_owner_consumption": {
+    "feat/planet-single-side-ui": "acccaf4ccc5d75c92d8bf2e585b1b2df1479a259",
+    "main": "e845ca58afd39184c3d4c5743021480e393adf74"
+  },
+  "owner_consumption_followup": {
+    "planet": {
+      "status": "consumed_by_original_owner_and_pushed",
+      "commit": "c375d26ea80dd653f2b5ad068a220d9e48d36cba",
+      "prepared_candidate": "0a606e5f6a4eee36446a7f843e1809ec4e6fa31e",
+      "identical_tree": "62bb50e24a9d8582222e97b01b3d6be96e9f1def",
+      "static_git_diff_counts": {
+        "removed": 1346,
+        "modified": 6
+      },
+      "owner_report_via_parent": {
+        "source_mappings_verified": 1352,
+        "unique_blob_sha256_verified": 1335,
+        "preserved": "两张批准图及站体脚本/blend/glb WIP"
+      },
+      "verification_boundary": "本整理线程核远端完整SHA、单父与文件计数、候选树完全一致及两张批准图仍存在；1352/1335哈希复核及现场WIP保全由原组报告、根线程转交，不冒称本线程新增现场检查"
+    },
+    "reactor": {
+      "status": "original_workspace_fast_forwarded_clean_reported_by_parent",
+      "commit": "4278ef9334cf313c0a1ab4ae4ab321fc6b464f96",
+      "remote_readback": "4278ef9334cf313c0a1ab4ae4ab321fc6b464f96"
+    },
+    "host": {
+      "status": "original_workspace_fast_forwarded_clean_reported_by_parent",
+      "commit": "912f5924ab7eb5082703108264f4378b3c9a435a",
+      "remote_readback": "912f5924ab7eb5082703108264f4378b3c9a435a"
+    },
+    "main": {
+      "status": "prepared_only_not_root_reviewed_not_applied",
+      "candidate": "61bde20c1d96167624379ceed41cb0293bb00119",
+      "remote_readback": "e845ca58afd39184c3d4c5743021480e393adf74"
+    }
+  },
+  "latest_original_main_and_planet_refs": {
+    "main": "e845ca58afd39184c3d4c5743021480e393adf74",
+    "feat/planet-single-side-ui": "c375d26ea80dd653f2b5ad068a220d9e48d36cba"
   }
 }

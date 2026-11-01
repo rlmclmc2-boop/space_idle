@@ -12,16 +12,20 @@
 | `implement/reactor-centered-godot` | [`4278ef9334cf313c0a1ab4ae4ab321fc6b464f96`](https://github.com/rlmclmc2-boop/space_idle/commit/4278ef9334cf313c0a1ab4ae4ab321fc6b464f96) | 1245 | 12 |
 | `design/clear-zone-host` | [`912f5924ab7eb5082703108264f4378b3c9a435a`](https://github.com/rlmclmc2-boop/space_idle/commit/912f5924ab7eb5082703108264f4378b3c9a435a) | 73 | 5 |
 | `feat/amount-safe-previews` | [`3dd45f5761d04251bb55478c34898781f8a4d0c3`](https://github.com/rlmclmc2-boop/space_idle/commit/3dd45f5761d04251bb55478c34898781f8a4d0c3) | 1 | 3 |
+| `feat/planet-single-side-ui`（原组实际消费） | [`c375d26ea80dd653f2b5ad068a220d9e48d36cba`](https://github.com/rlmclmc2-boop/space_idle/commit/c375d26ea80dd653f2b5ad068a220d9e48d36cba) | 1346 | 6 |
 | `docs/design-entry-cleanup-20261031` | [`8e6d5af48db9384cdebd5add54c9754a0165d254`](https://github.com/rlmclmc2-boop/space_idle/commit/8e6d5af48db9384cdebd5add54c9754a0165d254) | 0 | 7 |
 
-装备为清除历史导航、失效状态和修复当前规范入口，未再改已合main的运行物；反应堆、公共壳及后台分别移出确认保存资料。仅本工作区自己的文档分支已快进至本轮版本；不声称其他原组工作区已经拉取这些远端文档提交。
+装备为清除历史导航、失效状态和修复当前规范入口，未再改已合main的运行物；反应堆、公共壳及后台分别移出确认保存资料。本工作区文档分支已快进。根线程后续确认：反应堆原工作区已快进4278ef93、整体原工作区已快进912f5924，均clean；这是原组现场报告，本线程另核远端SHA一致。星球原组已实际消费并推送c375d26e。装备与后台工作区是否拉取未另作声明。
 
 ## 只准备差异，未清理原分支
 
 - 主线：[`docs/daily-cleanup-main-20261101@61bde20c1d96167624379ceed41cb0293bb00119`](https://github.com/rlmclmc2-boop/space_idle/commit/61bde20c1d96167624379ceed41cb0293bb00119)，移出141件、修改11份。原分支仍为`e845ca58afd39184c3d4c5743021480e393adf74`。保留根审后main接纳要求；本轮不合功能代码、不直接推进main
-- 星球：[`docs/daily-cleanup-planet-20261101@0a606e5f6a4eee36446a7f843e1809ec4e6fa31e`](https://github.com/rlmclmc2-boop/space_idle/commit/0a606e5f6a4eee36446a7f843e1809ec4e6fa31e)，移出1346件、修改6份。原分支仍为`acccaf4ccc5d75c92d8bf2e585b1b2df1479a259`。已知原组持续WIP；已读到R114，但未读取其现场。原组消费时逐路径重核HEAD/blob并保最新入口，不整提交覆盖新制作。
 
-main候选只去已归档资料、旧导航和已裁定撤回的ConfigBundle/保存配置hash命令，不改实际实现。星球候选保留当前明确批准的两张完整态/闭环分步图；这两张属于现行制作依据，不能按昨日通用移出表删掉。
+main候选只去已归档资料、旧导航和已裁定撤回的ConfigBundle/保存配置hash命令，不改实际实现。星球原组实际消费保留两张当前批准的完整态/闭环分步图；站体脚本/blend/glb WIP亦按原组报告保全。main仍未根审、未实际清理，不能写全仓完成。
+
+## 原组消费回执
+
+星球实际提交`c375d26ea80dd653f2b5ad068a220d9e48d36cba`移出1346件、修改6份；其tree `62bb50e24a9d8582222e97b01b3d6be96e9f1def`与准备候选`0a606e5f6a4eee36446a7f843e1809ec4e6fa31e`完全相同。本线程核了单父、文件计数、远端完整SHA及两张批准图仍存在。原组报告1352条来源映射、1335个唯一blob SHA256复核，并保全站体脚本/blend/glb WIP；该哈希与现场保全结论明确归原组，不冒称本线程新增现场复测。反应堆、整体原工作区已快进且clean由根转交，远端分别仍为4278ef93／912f5924。[完整消费回执](consumption.json)。
 
 ## 最新状态核对与保全
 

@@ -1,17 +1,18 @@
 {
   "main": {
     "status": "prepared_pushed_not_applied_to_main",
-    "reason": "保留根审后main接纳要求；本轮不合功能代码、不直接推进main",
+    "reason": "仍仅准备61bde20c，未根审、未实际清理main；本轮不直接推进main。",
     "commit": "61bde20c1d96167624379ceed41cb0293bb00119"
   },
   "planet": {
-    "status": "prepared_pushed_original_branch_untouched",
-    "reason": "已知原组持续WIP；已读到R114，但未读取其现场。原组消费时逐路径重核HEAD/blob并保最新入口，不整提交覆盖新制作。",
-    "commit": "0a606e5f6a4eee36446a7f843e1809ec4e6fa31e",
+    "status": "consumed_by_original_owner",
+    "reason": "原组已按固定候选实际消费并推送；两张批准图与站体脚本/blend/glb WIP保全由原组报告。不是整个星球或全仓验收完成。",
+    "commit": "c375d26ea80dd653f2b5ad068a220d9e48d36cba",
     "current_design_inputs_retained": [
       "space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-clearance.png",
       "space-battleship/docs/game-design/art/modules/planet-six/scheme-b/solid-integrated-spine-stages-closed.png"
-    ]
+    ],
+    "prepared_candidate": "0a606e5f6a4eee36446a7f843e1809ec4e6fa31e"
   },
   "uncertain_authoring_metadata": {
     "status": "retained",

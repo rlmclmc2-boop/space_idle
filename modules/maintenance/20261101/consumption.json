@@ -1,0 +1,33 @@
+{
+  "planet": {
+    "status": "consumed_by_original_owner_and_pushed",
+    "commit": "c375d26ea80dd653f2b5ad068a220d9e48d36cba",
+    "prepared_candidate": "0a606e5f6a4eee36446a7f843e1809ec4e6fa31e",
+    "identical_tree": "62bb50e24a9d8582222e97b01b3d6be96e9f1def",
+    "static_git_diff_counts": {
+      "removed": 1346,
+      "modified": 6
+    },
+    "owner_report_via_parent": {
+      "source_mappings_verified": 1352,
+      "unique_blob_sha256_verified": 1335,
+      "preserved": "两张批准图及站体脚本/blend/glb WIP"
+    },
+    "verification_boundary": "本整理线程核远端完整SHA、单父与文件计数、候选树完全一致及两张批准图仍存在；1352/1335哈希复核及现场WIP保全由原组报告、根线程转交，不冒称本线程新增现场检查"
+  },
+  "reactor": {
+    "status": "original_workspace_fast_forwarded_clean_reported_by_parent",
+    "commit": "4278ef9334cf313c0a1ab4ae4ab321fc6b464f96",
+    "remote_readback": "4278ef9334cf313c0a1ab4ae4ab321fc6b464f96"
+  },
+  "host": {
+    "status": "original_workspace_fast_forwarded_clean_reported_by_parent",
+    "commit": "912f5924ab7eb5082703108264f4378b3c9a435a",
+    "remote_readback": "912f5924ab7eb5082703108264f4378b3c9a435a"
+  },
+  "main": {
+    "status": "prepared_only_not_root_reviewed_not_applied",
+    "candidate": "61bde20c1d96167624379ceed41cb0293bb00119",
+    "remote_readback": "e845ca58afd39184c3d4c5743021480e393adf74"
+  }
+}
