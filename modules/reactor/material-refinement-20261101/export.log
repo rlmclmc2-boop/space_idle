@@ -3,135 +3,146 @@ Warning: No mesh data to join
 Warning: No mesh data to join
 Warning: No mesh data to join
 Warning: No mesh data to join
+RESOLVED_PART_MODIFIERS bay structure 76
+RESOLVED_PART_MODIFIERS core_mount structure 22
+RESOLVED_PART_MODIFIERS core structure 68
+RESOLVED_PART_MODIFIERS weapons structure 80
+RESOLVED_PART_MODIFIERS defence structure 48
+RESOLVED_PART_MODIFIERS smelting structure 66
+RESOLVED_PART_MODIFIERS condensation structure 48
+RESOLVED_PART_MODIFIERS console_1 structure 26
+RESOLVED_PART_MODIFIERS console_2 structure 28
+RESOLVED_PART_MODIFIERS console_3 structure 30
+RESOLVED_PART_MODIFIERS console_4 structure 32
 ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
-16:22:15 | INFO: Starting glTF 2.0 export
-16:22:15 | INFO: Extracting primitive: aft bulkhead
-16:22:15 | INFO: Primitives created: 14
-16:22:15 | INFO: Extracting primitive: central deck inset
-16:22:15 | INFO: Primitives created: 14
-16:22:15 | INFO: Extracting primitive: Sphere
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: core energy rim
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: Cylinder
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Icosphere.001
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Icosphere
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Cylinder.096
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: core armor 0
-16:22:15 | INFO: Primitives created: 14
-16:22:15 | INFO: Extracting primitive: Icosphere.005
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Icosphere.003
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Icosphere.004
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Icosphere.002
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Cylinder.098
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Cylinder.102
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Cylinder.106
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Cylinder.097
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Cylinder.101
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Cylinder.105
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: weapon output
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: weapon output pulse
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: weapons receiver acknowledgement
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: weapon aperture return
-16:22:15 | INFO: Primitives created: 16
-16:22:15 | INFO: Extracting primitive: weapons channel shell
-16:22:15 | INFO: Primitives created: 4
-16:22:15 | INFO: Extracting primitive: weapons channel work
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: defence receiver acknowledgement
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: defence hollow receiver
-16:22:15 | INFO: Primitives created: 14
-16:22:15 | INFO: Extracting primitive: shield active rim
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: shield bowed field
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: defence channel work
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: defence channel shell
-16:22:15 | INFO: Primitives created: 4
-16:22:15 | INFO: Extracting primitive: Icosphere.006
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Icosphere.007
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Icosphere.008
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: furnace liquid
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: furnace outlet liquid
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: furnace pour
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: furnace throat
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: smelting receiver acknowledgement
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: furnace access inset
-16:22:15 | INFO: Primitives created: 17
-16:22:15 | INFO: Extracting primitive: smelting channel shell
-16:22:15 | INFO: Primitives created: 4
-16:22:15 | INFO: Extracting primitive: smelting channel work
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: condensation receiver acknowledgement
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: condensation hollow receiver
-16:22:15 | INFO: Primitives created: 14
-16:22:15 | INFO: Extracting primitive: crystal body 0
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: crystal body 1
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: crystal body 2
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: crystal body 3
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: crystal body 4
-16:22:15 | INFO: Primitives created: 2
-16:22:15 | INFO: Extracting primitive: Icosphere.009
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Icosphere.010
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Icosphere.011
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: Icosphere.012
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: crystal containment glass
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: condensation channel work
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: condensation channel shell
-16:22:15 | INFO: Primitives created: 4
-16:22:15 | INFO: Extracting primitive: smelting channel shell.001
-16:22:15 | INFO: Primitives created: 4
-16:22:15 | INFO: Extracting primitive: smelting channel work.001
-16:22:15 | INFO: Primitives created: 1
-16:22:15 | INFO: Extracting primitive: console corner armor
-16:22:15 | INFO: Primitives created: 8
-16:22:15 | INFO: Extracting primitive: allocation row separator
-16:22:15 | INFO: Primitives created: 10
-16:22:15 | INFO: Extracting primitive: allocation row separator.001
-16:22:15 | INFO: Primitives created: 10
-16:22:15 | INFO: Extracting primitive: allocation row separator.003
-16:22:15 | INFO: Primitives created: 10
-16:22:15 | INFO: Finished glTF 2.0 export in 0.3230724334716797 s
+16:43:30 | INFO: Starting glTF 2.0 export
+16:43:30 | INFO: Extracting primitive: aft bulkhead
+16:43:30 | INFO: Primitives created: 14
+16:43:30 | INFO: Extracting primitive: central deck inset
+16:43:30 | INFO: Primitives created: 14
+16:43:30 | INFO: Extracting primitive: Sphere
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: core energy rim
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: Cylinder
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Icosphere.001
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Icosphere
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Cylinder.096
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: core armor 0
+16:43:30 | INFO: Primitives created: 14
+16:43:30 | INFO: Extracting primitive: Icosphere.005
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Icosphere.003
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Icosphere.004
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Icosphere.002
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Cylinder.098
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Cylinder.102
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Cylinder.106
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Cylinder.097
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Cylinder.101
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Cylinder.105
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: weapon output
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: weapon output pulse
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: weapons receiver acknowledgement
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: weapon aperture return
+16:43:30 | INFO: Primitives created: 16
+16:43:30 | INFO: Extracting primitive: weapons channel shell
+16:43:30 | INFO: Primitives created: 4
+16:43:30 | INFO: Extracting primitive: weapons channel work
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: defence receiver acknowledgement
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: defence hollow receiver
+16:43:30 | INFO: Primitives created: 14
+16:43:30 | INFO: Extracting primitive: shield active rim
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: shield bowed field
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: defence channel work
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: defence channel shell
+16:43:30 | INFO: Primitives created: 4
+16:43:30 | INFO: Extracting primitive: Icosphere.006
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Icosphere.007
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Icosphere.008
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: furnace liquid
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: furnace outlet liquid
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: furnace pour
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: furnace throat
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: smelting receiver acknowledgement
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: furnace access inset
+16:43:30 | INFO: Primitives created: 17
+16:43:30 | INFO: Extracting primitive: smelting channel shell
+16:43:30 | INFO: Primitives created: 4
+16:43:30 | INFO: Extracting primitive: smelting channel work
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: condensation receiver acknowledgement
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: condensation hollow receiver
+16:43:30 | INFO: Primitives created: 14
+16:43:30 | INFO: Extracting primitive: crystal body 0
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: crystal body 1
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: crystal body 2
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: crystal body 3
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: crystal body 4
+16:43:30 | INFO: Primitives created: 2
+16:43:30 | INFO: Extracting primitive: Icosphere.009
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Icosphere.010
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Icosphere.011
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: Icosphere.012
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: crystal containment glass
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: condensation channel work
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: condensation channel shell
+16:43:30 | INFO: Primitives created: 4
+16:43:30 | INFO: Extracting primitive: smelting channel shell.001
+16:43:30 | INFO: Primitives created: 4
+16:43:30 | INFO: Extracting primitive: smelting channel work.001
+16:43:30 | INFO: Primitives created: 1
+16:43:30 | INFO: Extracting primitive: console corner armor
+16:43:30 | INFO: Primitives created: 8
+16:43:30 | INFO: Extracting primitive: allocation row separator
+16:43:30 | INFO: Primitives created: 10
+16:43:30 | INFO: Extracting primitive: allocation row separator.001
+16:43:30 | INFO: Primitives created: 10
+16:43:30 | INFO: Extracting primitive: allocation row separator.003
+16:43:30 | INFO: Primitives created: 10
+16:43:30 | INFO: Finished glTF 2.0 export in 0.32851433753967285 s
 
-EXPORTED_FACETED_GEOMETRY /workspace/space_idle/space-battleship/assets/ui/reactor/b01/faceted-reactor.glb ffe4baeca199d280fba545fdb32636f1899f2f7e2c7990c2dc9f1479086528e9
+EXPORTED_FACETED_GEOMETRY /workspace/space_idle/space-battleship/assets/ui/reactor/b01/faceted-reactor.glb 22a11529ae9d707029c4d6a1042cee047c4176237fef202fba0f58beee48e83c
 Blender 4.3.2
 
 Blender quit
