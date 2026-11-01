@@ -37,6 +37,7 @@ EDGE = material("Dark slate panel edge", (.085,.13,.16), .16, .75)
 KEEL = material("Deep navy pressure keel", (.012,.035,.055), .10, .80)
 MACHINE = material("Machine steel", (.043,.095,.115), .10, .72)
 GLASS = material("Dark blue glass", (.025,.16,.22), .26, .34)
+WINDOW = material("Habitat cyan window glass", (.025,.34,.43), .08, .50, .42)
 CYAN = material("Contained cyan energy", (.025,.65,.84), .08, .40, 1.8)
 AMBER = material("Contained amber heat", (.68,.21,.025), .04, .55, .65)
 GOLD = material("Warm work marking", (.47,.25,.075), .24, .56)
@@ -426,7 +427,7 @@ torus("Command continuous observation sill",(0,-.32,1.52),1.04,.06,ARMOR_FACE,st
 for i in range(12):
     a=i*tau/12
     x=1.11*cos(a); y=-.32+1.11*sin(a)
-    window=box("Command observation window bay",(x,y,1.36),(.27,.085,.12),GLASS,station,.01)
+    window=box("Command observation window bay",(x,y,1.36),(.30,.095,.16),WINDOW,station,.01)
     window.rotation_euler.z=a+pi/2
     if i%3==0:
         pylon=box("Command exterior armor buttress",(1.21*cos(a),-.32+1.21*sin(a),1.29),
@@ -447,6 +448,13 @@ torus("Command bearing cyan collar",(0,-.32,1.70),.62,.045,CYAN,station)
 cone("Command faceted core",(0,-.32,1.86),.47,.22,.29,ARMOR,station,8)
 cyl("Command blue canopy",(0,-.32,2.04),.23,.09,GLASS,station,8)
 cone("Command short beacon",(0,-.32,2.20),.10,.02,.20,ARMOR,station,8)
+beam("Command tall navigation mast",(.12,-.32,2.23),(.12,-.32,2.84),.055,.055,ARMOR_SIDE,station)
+cyl("Command mast amber signal",(.12,-.32,2.86),.055,.09,AMBER,station,8)
+for side in (-1,1):
+    beam("Command secondary bearing mast",(side*.75,-.32,1.79),
+         (side*.75,-.32,2.32),.045,.045,ARMOR_SIDE,station)
+    cyl("Command secondary amber signal",(side*.75,-.32,2.34),
+        .045,.075,AMBER,station,8)
 
 # Heat is a working aperture in the band, marked by a low furnace clamp.
 cyl("Heat chamber dark integrated foundation",(0,-.32,1.06),1.27,.25,KEEL,refinery,12)
@@ -469,6 +477,11 @@ faceted_dome("Heat chamber gold faceted crown",refinery,(0,-.32),
 cyl("Contained furnace dark collar",(0,-.32,2.22),.19,.08,EDGE,refinery,12)
 cyl("Contained furnace amber aperture",(0,-.32,2.27),.15,.04,AMBER,refinery,12)
 torus("Furnace retaining ring",(0,-.32,2.29),.20,.035,ARMOR_SIDE,refinery)
+for side in (-1,1):
+    beam("Heat node navigation mast",(side*1.20,-.32,1.59),
+         (side*1.20,-.32,2.34),.045,.045,ARMOR_SIDE,refinery)
+    cyl("Heat node amber signal",(side*1.20,-.32,2.37),
+        .045,.07,AMBER,refinery,8)
 for i in range(8):
     a=i*tau/8
     window=box("Heat ring amber machinery port",(1.17*cos(a),-.32+1.17*sin(a),1.24),
@@ -520,6 +533,13 @@ for a in (-67,-34):
 for a in (-59,-43):
     owned_arc(workshop,"Manufacturing orange overhead gate",a,a+1.4,
               4.18,5.08,1.16,1.28,AMBER)
+for radial_y in (-.78,.08):
+    box("Manufacturing high gantry travel rail",(0,radial_y,1.44),
+        (1.75,.085,.10),GOLD,workshop,.014)
+    for tangent_x in (-.85,.85):
+        beam("Manufacturing gantry support post",
+             (tangent_x,radial_y,.45),(tangent_x,radial_y,1.45),
+             .085,.10,ARMOR_SIDE,workshop)
 for x in (-1.12,1.12):
     for y in (-.75,.20):
         beam("Manufacturing armored portal upright",(x,y,.37),(x,y,1.62),.24,.28,ARMOR,workshop)
