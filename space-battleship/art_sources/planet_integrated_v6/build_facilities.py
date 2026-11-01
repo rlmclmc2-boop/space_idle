@@ -178,12 +178,13 @@ def station(root, m):
 
 
 def refinery(root, m):
-    ring_transition(root, m, 1.13)
+    ring_transition(root, m, 1.40)
     # The furnace is a horizontal heat vault with exposed paired intakes.
     loft_x("Ring-through furnace vault", [
-        (-.94,0,.36,.52,.25),(-.58,0,.46,.69,.35),
-        (.63,0,.46,.69,.35),(.95,0,.36,.52,.25),
-    ], m["pressure"], root)
+        (-1.34,0,.26,.32,.16),(-.78,0,.36,.52,.25),
+        (-.58,0,.46,.69,.35),(.63,0,.46,.69,.35),
+        (.93,0,.36,.52,.25),(1.34,0,.26,.32,.16),
+    ], m["armor"], root)
     ellipsoid("Burnished heat pressure crown", (.24,0,.72),(.70,.65,.44),m["heat"],root)
     ellipsoid("Recessed hot core", (.27,0,1.04),(.40,.38,.12),m["work"],root)
     for y in (-.42,.42):
@@ -213,19 +214,20 @@ def refinery(root, m):
     shutters=empty("CoolingShutters",root,(.67,0,.69))
     for y in (-.38,0,.38):
         box("Heat shutter",(0,y,0),(.30,.19,.07),m["armor"],shutters)
-    box("Front receiving aperture",(.91,0,.33),(.055,.68,.28),m["work"],root)
-    box("Recessed receiving slit",(.945,0,.34),(.016,.52,.13),m["signal"],root,.004)
+    box("Front receiving aperture",(1.34,0,.27),(.055,.50,.20),m["pressure"],root)
+    box("Recessed receiving slit",(1.375,0,.28),(.016,.39,.08),m["signal"],root,.004)
 
 
 def workshop(root,m):
-    ring_transition(root,m,1.23)
+    ring_transition(root,m,1.56)
     # One airy manufacturing gateway: paired low girders, two spanning
     # portals and a visible moving tool, with no enclosing side boxes.
     for side in (-1,1):
         y=side*.68
         loft_x("Continuous manufacturing side girder",[
-            (-1.20,y,.46,.15,.20),(-.88,y,.50,.24,.27),
-            (.88,y,.50,.24,.27),(1.20,y,.46,.15,.20),
+            (-1.57,y,.27,.08,.11),(-1.12,y,.43,.17,.22),
+            (-.88,y,.50,.24,.27),(.88,y,.50,.24,.27),
+            (1.12,y,.43,.17,.22),(1.57,y,.27,.08,.11),
         ],m["armor"],root)
         box("Inner running rail",(0,side*.47,.70),(1.69,.085,.08),m["machinery"],root)
         box("Rail power key",(0,side*.42,.75),(1.38,.018,.03),m["service"],root,.004)
