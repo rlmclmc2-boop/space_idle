@@ -169,198 +169,118 @@ for center in (pi/4,3*pi/4,5*pi/4,7*pi/4):
 for i in range(24):
     a0=i*tau/24+.008
     a1=(i+1)*tau/24-.008
-    annular_band("Thin segmented armor cover",4.21,4.45,.13,.20,ARMOR,a0,a1,4)
+    annular_band("Thin segmented dark armor cover",4.25,4.41,.13,.18,ARMOR_SIDE,a0,a1,4)
     if i % 3 == 0:
         a=(a0+a1)*.5
         annular_band("Through-beam pressure coupling",4.18,4.48,-.30,.22,EDGE,a-.012,a+.012,2)
 
 
-def socket(name, deg, open_fork=False, section_node=False):
-    a=deg*pi/180
-    o=parent(name,(4.33*cos(a),4.33*sin(a),.05),a+pi/2)
-    if open_fork:
-        armor_prism("Open dock root pressure yoke",
-                    [(-1.55,.25),(-1.08,-.48),(1.08,-.48),(1.55,.25),
-                     (1.55,.78),(1.08,.90),(-1.08,.90),(-1.55,.78)],-.27,.21,KEEL,o)
-    elif not section_node:
-        armor_prism("Integrated tapered pressure socket",
-                    [(-1.55,-.45),(-1.08,-.91),(1.08,-.91),(1.55,-.45),
-                     (1.55,.45),(1.08,.91),(-1.08,.91),(-1.55,.45)],-.27,.21,KEEL,o)
-    else:
-        # The hall's two load walls are the bearing. Leave its work floor
-        # open between them instead of placing the whole building on a pad.
-        for side in (-1,1):
-            box("Hall integral longitudinal pressure rail",(0,side*.69,-.03),(2.63,.28,.34),KEEL,o,.06)
-    box("Continuous exposed central service spine",(0,0,.22),(2.86,.43,.075),MACHINE,o,.03)
-    box("Common through-running enclosed service trace",(0,0,.27),(2.75,.025,.016),CYAN,o,.005)
+def section(name, degrees):
+    """Each facility is an occupied arc segment, not a building on a pad."""
+    a=degrees*pi/180
+    root=parent(name,(4.33*cos(a),4.33*sin(a),.05),a+pi/2)
+    box("Through-node enclosed machine spine",(0,0,.06),(3.72,.19,.25),MACHINE,root,.035)
     for side in (-1,1):
-        if section_node:
-            box("Section node armored load cheek",(0,side*.70,.28),(2.18,.22,.29),ARMOR,o,.055)
-        else:
-            armor_prism("Common flared primary load bank",
-                        [(-1.47,side*.38),(-1.02,side*.90),(1.02,side*.90),(1.47,side*.38)],
-                        .20,.46,ARMOR,o)
-        box("Continuous machine side course",(0,side*.83,-.07),(2.33,.12,.23),EDGE,o,.03)
-        box("Contained socket service way",(0,side*.899,.05),(2.1,.025,.034),CYAN,o,.006)
-    for x in (-1.00,1.00):
-        armor_prism("Visible heavy socket-to-ring shear key",
-                    [(x*.90,-.49),(x*1.47,-.42),(x*1.61,.42),(x*.90,.49)],.02,.33,EDGE,o)
-        for side in (-1,1):
-            if section_node:
-                beam("Ring beam enters structural hall wall",(x*.96,side*.70,.25),(x*1.59,side*.39,.18),.17,.18,ARMOR,o)
-            else:
-                armor_prism("Four flared armored spine transitions",
-                            [(x*.91,side*.43),(x*1.48,side*.43),
-                             (x*1.63,side*.84),(x*.69,side*.86)],.13,.42,ARMOR,o)
-    return o
+        armor_prism("Swept node load wall",
+                    [(-1.87,side*.15),(-1.48,side*.67),(-.84,side*.82),
+                     (.84,side*.82),(1.48,side*.67),(1.87,side*.15)],
+                    -.08,.38,ARMOR,root)
+        box("Dark inner pressure channel",(0,side*.48,.27),(2.42,.09,.16),EDGE,root,.02)
+        box("Node-contained service trace",(0,side*.59,.39),(2.22,.025,.024),CYAN,root,.006)
+    for x in (-1.63,1.63):
+        beam("Connector enters occupied arc",(x*.88,0,.20),(x*1.18,0,.12),.27,.29,EDGE,root)
+    return root
 
 
-station=socket("01 / Annular command and habitation bearing",135)
-cyl("Closed annular lower bearing",(0,0,.57),.72,.35,KEEL,station,12)
-torus("Habitat upper pressure collar",(0,0,.86),.62,.13,ARMOR,station)
-torus("Inboard turquoise bearing",(0,0,.92),.39,.042,CYAN,station)
-cone("Eight-sided raised command citadel",(0,0,1.20),.45,.26,.66,KEEL,station,8)
-torus("Continuous command glazing band",(0,0,1.28),.34,.035,CYAN,station)
-cyl("Command dark glass crown",(0,0,1.55),.27,.13,GLASS,station,8)
-for i in range(4):
-    a=(i+.5)*tau/4
-    x,y=.65*cos(a),.65*sin(a)
-    block=box("Four armored habitation pressure sectors",(x,y,.65),(.38,.37,.35),ARMOR,station,.055)
-    block.rotation_euler.z=a
+station=section("01 / Annular command and habitation bearing",135)
 for side in (-1,1):
-    armor_prism("Swept outboard habitation wing",
-                [(side*.54,-.38),(side*1.46,-.55),(side*1.72,.06),(side*.65,.38)],.42,.91,ARMOR,station)
-    slope_shell("Habitation wing pitched roof",
-                [(side*.68,-.30),(side*1.43,-.42),(side*1.55,.06),(side*.70,.27)],
-                [1.16,.87,.87,1.16],.13,EDGE,station)
-    box("Blue glazed observation slit",(side*1.10,-.40,.84),(.51,.035,.08),GLASS,station,.01)
-    beam("Outer wing pressure strut",(side*1.44,.06,.54),(side*1.72,.06,.91),.15,.17,EDGE,station)
-    # A pale pressure cap closes the shadow-side wing, so its actual outer
-    # silhouette remains legible against the starfield without an emissive rim.
-    box("Outboard wing armor end cap",(side*1.60,.015,.84),(.23,.30,.17),ARMOR,station,.035)
-cone("Short command beacon",(0,0,1.77),.14,.05,.34,ARMOR,station,8)
-cyl("Amber signal cap",(0,0,1.97),.07,.07,AMBER,station,8)
+    armor_prism("Swept inhabited arc wing",
+                [(side*.35,-.40),(side*1.49,-.66),(side*1.80,-.16),(side*.52,.40)],
+                .37,.89,ARMOR,station)
+    slope_shell("Habitation wing inclined upper armor",
+                [(side*.48,-.31),(side*1.42,-.53),(side*1.65,-.13),(side*.52,.27)],
+                [1.08,.90,.82,1.02],.13,ARMOR,station)
+    box("Long hab pressure window",(side*1.03,-.59,.72),(.70,.035,.10),GLASS,station,.012)
+    box("Outboard wing armor end cap",(side*1.66,-.13,.70),(.24,.34,.22),ARMOR,station,.035)
+cyl("Closed command bearing integrated in arc",(0,0,.61),.62,.40,KEEL,station,12)
+torus("Habitat upper pressure collar",(0,0,.84),.60,.12,ARMOR,station)
+torus("Inboard turquoise bearing",(0,0,.92),.38,.042,CYAN,station)
+cone("Eight-sided raised command citadel",(0,0,1.20),.43,.25,.61,KEEL,station,8)
+torus("Continuous command glazing band",(0,0,1.27),.32,.035,CYAN,station)
+cyl("Command dark glass crown",(0,0,1.52),.26,.12,GLASS,station,8)
+cone("Short command beacon",(0,0,1.73),.13,.05,.28,ARMOR,station,8)
+cyl("Amber signal cap",(0,0,1.90),.065,.07,AMBER,station,8)
 
 
-refinery=socket("02 / Faceted heat refinery fortress",45)
-box("One furnace lower pressure foundation",(0,0,.54),(1.65,1.40,.46),KEEL,refinery,.18)
-cyl("Twelve-facet heat chamber",(0,0,1.03),.59,.76,MACHINE,refinery,12)
-cyl("Contained amber furnace core",(0,0,1.44),.36,.05,AMBER,refinery,12)
-for i in range(8):
-    a=i*tau/8
-    box("Heat escaping through armored slit",(.59*cos(a),.59*sin(a),1.00),(.028,.09,.37),AMBER,refinery,.004).rotation_euler.z=a
-torus("Heavy furnace upper clamp",(0,0,1.44),.49,.10,EDGE,refinery)
+refinery=section("02 / Faceted heat refinery fortress",45)
 for side in (-1,1):
-    armor_prism("Tall angled chamber armor",
-                [(side*.24,-.53),(side*.74,-.51),(side*.87,.36),(side*.34,.48)],.74,1.26,ARMOR,refinery)
-    armor_prism("Furnace lower buttress shell",
-                [(side*.70,-.80),(side*1.04,-.67),(side*.86,.70),(side*.54,.73)],.45,.91,EDGE,refinery)
+    armor_prism("Ore transfer arc chamber",
+                [(side*.48,-.58),(side*1.42,-.62),(side*1.78,-.13),(side*.60,.46)],
+                .36,1.02,ARMOR,refinery)
+    slope_shell("Ore chamber sloped pressure roof",
+                [(side*.61,-.48),(side*1.36,-.52),(side*1.56,-.12),(side*.65,.34)],
+                [1.19,1.11,.89,1.04],.14,ARMOR,refinery)
+    box("Ore intake dark face",(side*1.07,-.60,.72),(.53,.055,.23),EDGE,refinery,.025)
+    box("Visible hot ore feed",(side*1.07,-.642,.73),(.39,.02,.055),AMBER,refinery,.008)
+    beam("Ore duct enters central furnace",(side*1.08,-.35,.79),(side*.42,-.12,.88),.18,.20,MACHINE,refinery)
+cyl("Twelve-facet heat chamber",(0,0,.93),.53,.94,MACHINE,refinery,12)
+cyl("Contained amber furnace core",(0,0,1.43),.34,.055,AMBER,refinery,12)
+torus("Heavy furnace upper clamp",(0,0,1.44),.46,.11,EDGE,refinery)
 for side in (-1,1):
-    beam("Twin chamfered furnace load legs",(side*.87,-.62,.37),(side*.49,0,1.48),.28,.31,ARMOR,refinery)
-    beam("Twin return load legs",(side*.87,.62,.37),(side*.49,0,1.48),.28,.31,ARMOR,refinery)
-    cone("Closed faceted ore tower",(side*.56,-.38,1.44),.29,.22,.70,ARMOR,refinery,4)
-    box("Ore pressure mouth",(side*.56,-.38,1.81),(.42,.43,.07),EDGE,refinery,.025)
-    box("Visible hot charge",(side*.56,-.38,1.86),(.28,.29,.022),GOLD,refinery,.006)
-    beam("Ore feed duct into heat chamber",(side*.56,-.38,1.18),(side*.21,0,1.15),.21,.24,MACHINE,refinery)
-    box("Outer heat louver bank",(side*.83,.15,.85),(.24,.68,.34),EDGE,refinery,.04)
-for x in (-.46,.46):
-    box("Front furnace clamp foot",(x,-.77,.55),(.38,.27,.43),ARMOR,refinery,.06)
-armor_prism("Open crucible trough returning into ring service bay",
-            [(-.31,.35),(.31,.35),(.45,.90),(-.45,.90)],.57,.74,EDGE,refinery)
-box("Dark narrow molten transfer well",(0,.67,.75),(.35,.65,.035),KEEL,refinery,.015)
-box("Contained hot metal path",(0,.66,.78),(.17,.55,.021),AMBER,refinery,.008)
-for x in (-.43,.43):
-    beam("Crucible shield shoulder",(x,.32,.67),(x,.87,.88),.13,.17,ARMOR,refinery)
+    beam("Furnace load buttress",(side*.65,-.48,.40),(side*.34,0,1.39),.24,.25,ARMOR,refinery)
+    box("Heat transfer socket",(side*.68,.48,.60),(.30,.42,.26),EDGE,refinery,.035)
+box("Rear crucible return throat",(0,.67,.55),(.60,.57,.24),EDGE,refinery,.035)
+box("Contained hot transfer path",(0,.67,.69),(.16,.48,.035),AMBER,refinery,.008)
 
 
-workshop=socket("03 / Open manufacturing hall",-45,section_node=True)
-box("Open recessed construction floor",(0,0,.48),(2.18,1.18,.22),MACHINE,workshop,.06)
-box("Deep open manufacture chamber mouth",(0,-.77,1.00),(1.48,.12,.68),KEEL,workshop,.025)
-box("Module under fabrication inside mouth",(0,-.85,.83),(.96,.13,.26),EDGE,workshop,.02)
-box("Exposed workpiece armor edge",(0,-.93,.94),(.74,.055,.07),ARMOR,workshop,.012)
+workshop=section("03 / Open manufacturing hall",-45)
+box("Recessed arc manufacturing work floor",(0,0,.37),(2.75,.83,.16),MACHINE,workshop,.035)
 for side in (-1,1):
-    box("Lengthwise heavy manufacturing sill",(0,side*.68,.65),(2.66,.33,.39),ARMOR,workshop,.11)
-    box("Traveling crane track",(0,side*.46,.88),(2.1,.10,.09),EDGE,workshop,.02)
-    armor_prism("Twin long armored production hall sidewalls",
-                [(-1.18,side*.55),(1.18,side*.55),(1.32,side*.85),(-1.32,side*.85)],
-                .67,1.32,EDGE,workshop)
-    slope_shell("Pitched armored production canopy around open work slot",
-                [(-1.16,side*.43),(1.16,side*.43),(1.21,side*.79),(-1.21,side*.79)],
-                [1.72,1.72,1.31,1.31],.17,ARMOR,workshop)
-    box("Long upper dark daylight opening",(0,side*.47,1.73),(1.74,.045,.02),GLASS,workshop,.004)
-# Both pressure sides share one door system as the hall rotates around the
-# planet. Three stepped plates sit proud of a navy recess with real seams.
-for face in (-1,1):
-    box("Manufacturing side door recessed well",(0,face*.902,1.055),(1.93,.045,.58),KEEL,workshop,.025)
-    for x in (-.64,0,.64):
-        box("Manufacturing side door segmented leaf",(x,face*.943,1.035),(.56,.075,.43),ARMOR_SIDE,workshop,.035)
-        box("Manufacturing side door raised lower cassette",(x,face*.985,.878),(.47,.035,.095),EDGE,workshop,.012)
-    box("Manufacturing side door pressure lintel",(0,face*.962,1.326),(2.10,.13,.105),ARMOR,workshop,.025)
-    box("Manufacturing side door armored threshold",(0,face*.969,.760),(2.04,.11,.105),ARMOR,workshop,.022)
-for x in (-.97,.97):
+    armor_prism("Continuous production pressure wall",
+                [(-1.56,side*.48),(-1.27,side*.78),(1.27,side*.78),(1.56,side*.48)],
+                .43,1.27,EDGE,workshop)
+    slope_shell("Production wall faceted canopy",
+                [(-1.38,side*.43),(1.38,side*.43),(1.27,side*.76),(-1.27,side*.76)],
+                [1.65,1.65,1.26,1.26],.15,ARMOR,workshop)
+    box("Manufacturing lateral dark hatch",(0,side*.83,.92),(2.12,.07,.53),KEEL,workshop,.025)
+    for x in (-.67,0,.67):
+        box("Three manufacturing door leaves",(x,side*.88,.92),(.56,.07,.41),ARMOR_SIDE,workshop,.025)
+    box("Manufacturing sill is arc wall",(0,side*.91,.66),(2.52,.12,.12),ARMOR,workshop,.025)
+for x in (-1.16,1.16):
     for side in (-1,1):
-        beam("Hall inclined primary post",(x,side*.72,.58),(x,side*.61,1.54),.25,.27,ARMOR,workshop)
-        beam("Hall pitched pressure roof",(x,side*.61,1.54),(x,0,1.86),.25,.28,ARMOR,workshop)
-        beam("Hall diagonal dark gusset",(x,side*.71,.71),(x,side*.28,1.57),.15,.17,EDGE,workshop)
-    armor_prism("Sloped armored end roof over production bay",
-                [(x-.25,-.68),(x+.25,-.68),(x+.25,.68),(x-.25,.68)],1.55,1.70,ARMOR,workshop)
-beam("Hall lengthwise raised ridge",(-.97,0,1.86),(.97,0,1.86),.20,.22,EDGE,workshop)
-armor_prism("Rear sealed fabrication vault",
-            [(-1.13,.13),(1.13,.13),(1.03,.88),(-1.03,.88)],
-            1.53,1.70,EDGE,workshop)
-for lo,hi,rise in ((-1.08,-.37,0),(-.36,.36,.10),(.37,1.08,0)):
-    slope_shell("Three stepped armored fabrication roof cassettes",
-                [(lo,.15),(hi,.15),(hi-.04,.82),(lo+.04,.82)],
-                [1.73+rise,1.73+rise,1.98+rise,1.98+rise],.19,ARMOR,workshop)
-for x in (-.63,0,.63):
-    beam("Vault transverse armored rib",(x,.14,1.77),(x,.79,1.96),.13,.16,EDGE,workshop)
-box("Vault front dark service hatch",(0,.105,1.41),(1.10,.07,.22),KEEL,workshop,.025)
-box("Fabrication exhaust crown",(0,.64,2.02),(.47,.34,.23),EDGE,workshop,.045)
-for side in (-1,1):
-    armor_prism("Upper lengthwise pressure clerestory",
-                [(-.73,side*.62),(.72,side*.62),(.60,side*.37),(-.60,side*.37)],
-                1.37,1.58,ARMOR,workshop)
-box("Unfinished armored module",(0,0,.78),(1.15,.58,.26),EDGE,workshop,.08)
-for x in (-.41,0,.41):
-    box("Three visible structural bays of module",(x,0,.94),(.09,.51,.06),ARMOR,workshop,.02)
-for side in (-1,1):
-    armor_prism("Open manufacture panel suspended over workpiece",
-                [(-.44,side*.12),(.40,side*.12),(.51,side*.29),(-.38,side*.29)],
-                .95,1.02,ARMOR,workshop)
-box("Contained active weld seam",(0,0,.98),(.82,.045,.02),AMBER,workshop,.004)
-box("Suspended gantry travel bridge",(.19,0,1.45),(.30,1.17,.19),MACHINE,workshop,.035)
-beam("Downward working tool",(.19,0,1.39),(.19,0,1.02),.13,.15,EDGE,workshop)
-box("Tool work glow",(.19,0,1.015),(.23,.29,.06),CYAN,workshop,.012)
-beam("Visible contained welding column",(.19,0,1.42),(.19,0,1.06),.045,.05,CYAN,workshop)
+        beam("Hall load post into ring arc",(x,side*.60,.43),(x,side*.50,1.51),.20,.23,ARMOR,workshop)
+        beam("Hall roof compression member",(x,side*.50,1.51),(x,0,1.80),.20,.23,ARMOR,workshop)
+for lo,hi,rise in ((-1.32,-.42,0),(-.41,.42,.11),(.43,1.32,0)):
+    slope_shell("Stepped fabrication roof vault",
+                [(lo,.06),(hi,.06),(hi-.04,.69),(lo+.04,.69)],
+                [1.57+rise,1.57+rise,1.83+rise,1.83+rise],.16,ARMOR,workshop)
+box("Unfinished armored module",(0,0,.65),(1.22,.49,.25),EDGE,workshop,.055)
+for x in (-.43,0,.43):
+    box("Visible module rib in hall",(x,0,.81),(.08,.48,.06),ARMOR,workshop,.015)
+box("Suspended gantry travel bridge",(.19,0,1.38),(.30,1.02,.17),MACHINE,workshop,.025)
+beam("Downward working tool",(.19,0,1.34),(.19,0,.91),.12,.14,EDGE,workshop)
+box("Tool work glow",(.19,0,.92),(.20,.24,.055),CYAN,workshop,.01)
+beam("Visible contained welding column",(.19,0,1.38),(.19,0,.96),.043,.05,CYAN,workshop)
 
 
-shipyard=socket("04 / Gated launch dock",-135,open_fork=True,section_node=True)
-box("Narrow free-space launch keel",(0,-.84,.42),(.44,2.91,.18),EDGE,shipyard,.04)
+shipyard=section("04 / Gated launch dock",-135)
+box("Dock arc transfer keel",(0,.08,.36),(2.92,.46,.26),EDGE,shipyard,.045)
 for side in (-1,1):
-    slope_shell("Angled armored dock root into open fork",
-                [(side*.48,.63),(side*1.12,.54),(side*.98,-.51),(side*.61,-.73)],
-                [1.32,1.02,.78,1.08],.17,ARMOR,shipyard)
-box("Inner dock transfer jaw",(0,.34,.67),(1.76,.48,.53),ARMOR,shipyard,.095)
-box("Blue dock throat",(0,.075,.78),(.78,.06,.16),CYAN,shipyard,.025)
+    armor_prism("Dock root forms occupied ring section",
+                [(side*.44,-.24),(side*1.34,-.53),(side*1.67,.12),(side*.55,.58)],
+                .25,.83,ARMOR,shipyard)
+    beam("Dock outboard launch arm",(side*.74,-.22,.70),(side*.76,-2.12,.70),.32,.38,ARMOR,shipyard)
+    beam("Launch arm dark lower girder",(side*.74,-.22,.42),(side*.76,-2.02,.42),.22,.27,EDGE,shipyard)
+    box("Dock contained approach guide",(side*.49,-.91,.78),(.04,1.80,.035),CYAN,shipyard,.004)
+    beam("Dock compression branch into arc",(side*.68,-.08,.39),(side*1.43,.41,.18),.23,.25,ARMOR,shipyard)
+    beam("Dock open portal pillar",(side*.75,-.43,.68),(side*.75,-.43,1.43),.22,.25,ARMOR,shipyard)
+beam("Dock open portal cross member",(-.76,-.43,1.44),(.76,-.43,1.44),.21,.25,ARMOR,shipyard)
+box("Docked shuttle fuselage",(0,-1.04,1.26),(.48,1.17,.25),EDGE,shipyard,.07)
+armor_prism("Pointed shuttle nose beyond open clamp",[(0,-2.02),(.23,-1.56),(-.23,-1.56)],1.17,1.35,EDGE,shipyard)
+box("Docked blue canopy",(0,-1.28,1.42),(.29,.47,.08),GLASS,shipyard,.025)
 for side in (-1,1):
-    beam("Outboard cantilever pressure fork",(side*.68,.56,.72),(side*.74,-2.18,.72),.38,.45,ARMOR,shipyard)
-    beam("Under-fork dark return girder",(side*.68,.56,.42),(side*.74,-2.08,.42),.23,.32,EDGE,shipyard)
-    beam("Fork root triangle into ring",(side*.66,.70,.46),(side*.95,1.16,.20),.28,.28,ARMOR,shipyard)
-    box("Contained launch guide",(side*.47,-.94,.83),(.045,2.21,.035),CYAN,shipyard,.005)
-for y in (-.38,):
-    for side in (-1,1):
-        beam("Heavy dock open gate pillar",(side*.73,y,.69),(side*.73,y,1.53),.23,.28,ARMOR,shipyard)
-        beam("Dock gate diagonal compression brace",(side*.73,y,.84),(side*.35,y,1.54),.14,.17,EDGE,shipyard)
-    beam("Heavy dock overhead load arch",(-.75,y,1.55),(.75,y,1.55),.23,.30,ARMOR,shipyard)
-box("Docked shuttle fuselage",(0,-1.09,1.36),(.53,1.34,.27),EDGE,shipyard,.11)
-armor_prism("Pointed shuttle nose beyond open clamp",
-            [(0,-2.16),(.25,-1.67),(-.25,-1.67)],1.27,1.43,EDGE,shipyard)
-box("Docked blue canopy",(0,-1.33,1.53),(.32,.53,.09),GLASS,shipyard,.04)
-for side in (-1,1):
-    armor_prism("Shuttle swept armored wing",
-                [(side*.16,-1.50),(side*.57,-1.14),(side*.59,-.63),(side*.18,-.80)],
-                1.33,1.42,EDGE,shipyard)
-    box("Shuttle contained engine",(side*.18,-.43,1.41),(.13,.08,.12),CYAN,shipyard,.018)
+    armor_prism("Shuttle swept armored wing",[(side*.15,-1.42),(side*.53,-1.08),(side*.53,-.62),(side*.17,-.79)],1.22,1.34,EDGE,shipyard)
+    box("Shuttle contained engine",(side*.17,-.43,1.31),(.12,.07,.11),CYAN,shipyard,.012)
 
 
 # Painted planet texture is existing source art; the new architecture above

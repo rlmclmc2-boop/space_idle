@@ -1,4 +1,4 @@
-"""Export the approved-direction concept meshes as four new Godot GLBs.
+"""Export the current integral-arc concept meshes as four Godot GLBs.
 
 Each facility is exported directly from concept.blend. The former v6 assets
 are not read. The existing game animation port names remain available.
