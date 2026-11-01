@@ -185,8 +185,16 @@ def refinery(root, m):
         (-.58,0,.46,.69,.35),(.63,0,.46,.69,.35),
         (.93,0,.36,.52,.25),(1.34,0,.26,.32,.16),
     ], m["armor"], root)
-    ellipsoid("Burnished heat pressure crown", (.24,0,.72),(.70,.65,.44),m["heat"],root)
-    ellipsoid("Recessed hot core", (.27,0,1.04),(.40,.38,.12),m["work"],root)
+    # Polygonal vertical pressure chamber replaces the unsupported round
+    # golden dome. Its jacket and four corner webs return load to the ring.
+    cylinder("Deep furnace chamber",(.14,0,.78),.54,.72,m["pressure"],root,12)
+    cone("Faceted hot furnace liner",(.14,0,.94),.46,.32,.57,m["heat"],root,12)
+    cylinder("Exposed upper heat aperture",(.14,0,1.25),.29,.055,m["work"],root,12)
+    torus("Upper furnace armor clamp",(.14,0,1.23),.31,.055,m["armor"],root)
+    for x in (-.42,.65):
+        for y in (-.45,.45):
+            beam("Furnace tower diagonal armor strut",(x,y,.35),
+                 (.14,y*.62,1.18),.19,.21,m["armor"],root)
     for y in (-.42,.42):
         beam("Crown longitudinal armor rib",(-.35,y,.88),
              (.67,y,.89),.10,.09,m["armor"],root)
@@ -203,13 +211,13 @@ def refinery(root, m):
     box("Crown receiving lip",(.83,0,.54),(.09,.71,.20),m["edge"],root)
     for side in (-1, 1):
         y = side*.48
-        intake=cone("Twin angled charge intake", (-.29,y,1.13), .18,.40,.70,m["work"],root)
-        intake.rotation_euler=(side*.13,.21,0)
-        mouth=cylinder("Hopper dark receiving mouth", (-.22,y+side*.05,1.48),.26,.035,m["pressure"],root)
-        mouth.rotation_euler=intake.rotation_euler
-        rim=torus("Hopper armored mouth rim",(-.22,y+side*.05,1.49),.27,.035,m["armor"],root)
-        rim.rotation_euler=intake.rotation_euler
-        beam("Hopper pressure duct", (-.29,y,.77),(.20,y,.48),.21,.21,m["edge"],root)
+        intake=cone("Twin faceted charge hopper", (-.29,y,1.13), .25,.35,.62,m["armor"],root,4)
+        intake.rotation_euler=(side*.13,.21,math.pi/4)
+        box("Hopper dark receiving throat",(-.22,y+side*.05,1.47),
+            (.48,.46,.07),m["pressure"],root,.014)
+        box("Visible charged material",(-.22,y+side*.05,1.515),
+            (.34,.32,.025),m["work"],root,.007)
+        beam("Hopper pressure duct", (-.29,y,.77),(.12,y*.34,.94),.23,.24,m["machinery"],root)
         pivot=empty("IntakeWheelLeft" if side<0 else "IntakeWheelRight",root,(.51,side*.73,.48))
         torus("Exposed intake rotor",(0,0,0),.18,.05,m["armor"],pivot)
         box("Rotor status blade",(0,0,.02),(.28,.045,.04),m["signal"],pivot)
@@ -243,11 +251,17 @@ def workshop(root,m):
                  (x,side*.68,1.25),.17,.18,m["armor"],root)
             beam("Triangulated open portal brace",(x,side*.72,.56),
                  (x,side*.24,1.27),.09,.10,m["edge"],root)
-        beam("Open portal overhead truss",(x,-.72,1.28),
-             (x,.72,1.28),.13,.16,m["armor"],root)
+        # One pitched gate over each end creates a manufacturing hall volume,
+        # rather than a flat rectangular canopy around an empty floor.
+        beam("Pitched manufacturing roof left",(x,-.72,1.28),
+             (x,0,1.58),.16,.19,m["armor"],root)
+        beam("Pitched manufacturing roof right",(x,0,1.58),
+             (x,.72,1.28),.16,.19,m["armor"],root)
         for side in (-1,1):
             beam("Portal triangular upper gusset",(x,side*.67,1.17),
                  (x,side*.35,1.27),.09,.10,m["edge"],root)
+    beam("Manufacturing ridge pressure spine",(-.88,0,1.58),
+         (.88,0,1.58),.14,.16,m["pressure"],root)
     # The open bay carries a visible unfinished module below the traveling
     # tool, so the node reads as manufacturing at the real page scale.
     loft_x("Open fabrication workpiece",[
@@ -268,6 +282,10 @@ def workshop(root,m):
 
 def shipyard(root,m):
     # Local Y is the ring tangent and local -X is the radial launch direction.
+    loft_x("Recessed shipyard launch keel",[
+        (-2.17,0,.17,.11,.08),(-1.68,0,.17,.35,.12),
+        (.45,0,.17,.38,.14),(.91,0,.17,.18,.08),
+    ],m["pressure"],root,.012)
     for side in (-1,1):
         y=side*.72
         loft_x("Ring-to-dock continuous fork",[
@@ -281,10 +299,20 @@ def shipyard(root,m):
         ],m["pressure"],root)
         box("Launch rail channel",(-1.25,side*.52,.53),(2.08,.045,.035),m["service"],root,.006)
         beam("Pressure fork return brace",(-.47,y,.20),(.57,side*.78,.47),.16,.17,m["machinery"],root)
+        beam("Dock root triangular load web",(.22,side*.72,.29),
+             (.92,side*1.04,.15),.28,.30,m["edge"],root)
+    box("Armored dock transfer crosshead",(.63,0,.38),
+        (.40,1.66,.35),m["armor"],root,.055)
+    box("Recessed dock transfer gate",(.39,0,.40),
+        (.045,.78,.18),m["pressure"],root,.014)
     for x in (-1.99,-.39):
-        beam("Dock open overhead portal",(x,-.77,1.02),(x,.77,1.02),.14,.16,m["work"],root)
+        beam("Dock armored overhead gate",(x,-.77,1.08),
+             (x,.77,1.08),.26,.28,m["armor"],root)
         for side in (-1,1):
-            beam("Dock portal riser",(x,side*.76,.40),(x,side*.76,1.02),.13,.15,m["armor"],root)
+            beam("Dock portal riser",(x,side*.76,.40),
+                 (x,side*.76,1.08),.21,.23,m["armor"],root)
+            beam("Dock gate diagonal load brace",(x,side*.76,.48),
+                 (x,side*.42,1.07),.13,.15,m["edge"],root)
     # The hull vertices already use dock-local coordinates. A second offset
     # would push its nose beyond the two cantilevers and hide most of the craft.
     shuttle=empty("Docked small craft",root)

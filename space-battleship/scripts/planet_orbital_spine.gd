@@ -337,7 +337,9 @@ func _add_curved_deck(parent: Node3D, begin: float, finish: float, width: float,
 		var wb := width + (_section_width(kind, b) - NODE_WIDTH if kind != "" else 0.0)
 		for band in profile.size() - 1:
 			var band_center: float = (profile[band].x + profile[band + 1].x) * 0.5
-			var target := channel_surface if material in [_deck, _sleeve] and absf(band_center) < 0.035 else surface
+			# A broad recessed machinery way breaks up the old road-like armor
+			# surface. Both armor banks remain part of this same load section.
+			var target := channel_surface if material in [_deck, _sleeve] and absf(band_center) < 0.095 else surface
 			_deck_vertex(target, profile, band, a, t0, wa, lift, v_start, v_end, kind)
 			_deck_vertex(target, profile, band, b, t1, wb, lift, v_start, v_end, kind)
 			_deck_vertex(target, profile, band + 1, a, t0, wa, lift, v_start, v_end, kind)
