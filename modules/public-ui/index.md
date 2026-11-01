@@ -85,3 +85,5 @@
 - 原图星球同壳候选 `e3774ee5`：[planet-v24-original-shared-20261101](planet-v24-original-shared-20261101/README.md)。
 
 - 当前清晰输送版公共组合 `ad184682`：[reactor-readable-shared-20261101](reactor-readable-shared-20261101/README.md)。
+
+- 原图星球同壳候选 `79329163`：[planet-v28-original-framing-shared-20261101](planet-v28-original-framing-shared-20261101/README.md)。
