@@ -5,6 +5,8 @@ uniform vec4 tint : source_color = vec4(1.0);
 uniform sampler2D albedo_tex : source_color;
 uniform bool textured = false;
 uniform bool luminous = false;
+uniform float hull_roughness = 0.68;
+uniform float hull_metallic = 0.10;
 uniform vec3 body_scale = vec3(1.0);
 uniform vec3 stellar_field_tint = vec3(1.0);
 uniform float stellar_field_strength = 0.0;
@@ -39,8 +41,8 @@ void fragment() {
 	}
 	float inner_field = (1.0 - smoothstep(0.025, 0.22, UV.x)) * stellar_field_strength;
 	ALBEDO = mix(min(color * 1.35, vec3(1.0)), stellar_field_tint, inner_field * 0.22);
-	ROUGHNESS = 0.68;
-	METALLIC = 0.10;
+	ROUGHNESS = hull_roughness;
+	METALLIC = hull_metallic;
 	if (luminous) {
 		EMISSION = color * 1.0;
 	} else if (textured) {

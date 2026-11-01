@@ -146,6 +146,8 @@ func _depth_clip_orbital_model(node: Node) -> void:
 			material.shader = preload("res://scripts/planet_spine_opaque.gdshader")
 			material.set_shader_parameter("tint", original.albedo_color)
 			material.set_shader_parameter("luminous", original.emission_enabled)
+			material.set_shader_parameter("hull_roughness", original.roughness)
+			material.set_shader_parameter("hull_metallic", original.metallic)
 			node.set_surface_override_material(index, material)
 			_orbital_depth_materials.append(material)
 	for child in node.get_children(): _depth_clip_orbital_model(child)
