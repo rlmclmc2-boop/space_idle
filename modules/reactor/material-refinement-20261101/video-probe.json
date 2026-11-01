@@ -6,8 +6,8 @@
       {
         "width": 1440,
         "height": 900,
-        "avg_frame_rate": "299/12",
-        "nb_read_frames": "299"
+        "avg_frame_rate": "25/1",
+        "nb_read_frames": "300"
       }
     ],
     "format": {

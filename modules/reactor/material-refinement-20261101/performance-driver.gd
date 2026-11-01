@@ -45,13 +45,27 @@ func run():
  await frames(3)
  print("PROFILE_SCENE ",JSON.stringify(session.campaign_system.save_state().state))
  print("PROFILE_CONTEXT fixed_battle_and_session=true wall_clock_visual_1x=true renderer=Mesa_llvmpipe_GL_compatibility no_recording=true size=",root.size," loads=",scene._stage._loads)
- await measure("projected_animated_first",scene,5.0)
- frozen=true;await frames(3)
- await measure("projected_frozen_same_render",scene,5.0)
- frozen=false;scene.hide();await frames(3)
- await measure("projected_hidden_no_replacement",scene,5.0)
- scene.show();await frames(5)
- await measure("projected_animated_return",scene,5.0)
+ # The two shaders differ only in opaque compositing. Owner/clock/geometry
+ # are held; recompilation is warmed before each five-second sample.
+ var background=scene._stage._background_material
+ var opaque_shader=background.shader
+ var mixed_shader=Shader.new()
+ mixed_shader.code=FileAccess.get_file_as_string("res://assets/ui/reactor/b01/faceted-canvas-background.gdshader").replace("render_mode blend_disabled;","")
+ var held: Dictionary={}
+ for key in ["resting_surface","working_surface","core_power"]:held[key]=background.get_shader_parameter(key)
+ frozen=true;await frames(5)
+ for mode in ["mixed_A1","opaque_B1","mixed_A2","opaque_B2"]:
+  background.shader=mixed_shader if mode.begins_with("mixed") else opaque_shader
+  for key in held:background.set_shader_parameter(key,held[key])
+  await frames(12)
+  if mode.ends_with("1"):
+   await RenderingServer.frame_post_draw
+   root.get_texture().get_image().get_region(Rect2i(0,65,808,835)).save_png("/tmp/reactor-opaque-"+mode+".png")
+  await measure(mode,scene,5.0)
+ frozen=false;await frames(8)
+ await measure("opaque_animated",scene,5.0)
+ scene.hide();await frames(3)
+ await measure("opaque_hidden_no_replacement",scene,5.0)
  print("PROJECTED_CACHE_END ",scene._stage.diagnostics)
  if session.save_files!=null:session.save_files.close(2000)
  game.queue_free();await frames(3)
