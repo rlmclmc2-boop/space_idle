@@ -90,13 +90,13 @@ void fragment(){
  if(work_kind==1){
   float rim=pow(1.0-abs(facing_normal.z),2.0);
   color=mix(vec3(0.01,0.12,0.22),vec3(0.05,0.65,0.9),rim);
-  opacity=0.10+rim*(0.20+0.30*strength);
+  opacity=0.035+rim*(0.12+0.25*strength);
  }else if(work_kind==2){
   float radius=length(point.xy-vec2(594.0,-340.0));
   float charge=smoothstep(0.0,.43,cycle);
   float head=exp(-pow((radius-118.0*(1.0-charge))/18.0,2.0));
-  color=vec3(.14,.77,1.0)*strength;
-  opacity=(.05+head*.50)*(1.0-smoothstep(.60,.72,cycle))*pow(abs(facing_normal.z),.8);
+  color=mix(vec3(.06,.65,.90),vec3(.82,1.20,1.30),head*.85)*strength;
+  opacity=(.24+head*.70)*(1.0-smoothstep(.60,.72,cycle))*pow(abs(facing_normal.z),.8);
  }else if(work_kind==3){
   float facing=max(0.0,dot(normalize(facing_normal),normalize(vec3(-.5,.6,.75))));
   float charged=smoothstep(0.0,.43,cycle);
@@ -107,9 +107,14 @@ void fragment(){
   float optical_depth=clamp(abs(facing_normal.z),0.0,1.0);
   float limb=pow(1.0-optical_depth,2.0);
   float axis=exp(-pow((point.x-594.0)/12.0,2.0));
-  vec3 plasma=mix(vec3(.02,.36,.60),vec3(.24,.92,1.0),facing*.55+charged*.25);
-  color=(plasma+vec3(.18,.62,.73)*limb+vec3(.40,.72,.80)*axis*(.20+compression*.40))*strength;
-  opacity=(.43+optical_depth*.24+release*.09+charged*.06)*smoothstep(.01,.25,optical_depth);
+  // A dense emitting volume: bright interior, blue optical-depth edge,
+  // and a pole-aligned hot core. Shape and normals, not a screen wash,
+  // determine the luminous body and its shadowed/illuminated hemispheres.
+  vec3 plasma=mix(vec3(.015,.38,.72),vec3(.22,1.05,1.30),facing*.66+charged*.20);
+  float inner=pow(optical_depth,2.0);
+  float hot_axis=axis*(.24+compression*.38);
+  color=(plasma+vec3(.13,.36,.40)*inner+vec3(.24,.46,.48)*limb+vec3(.45,.65,.68)*hot_axis)*strength;
+  opacity=(.70+optical_depth*.18+release*.07+charged*.03)*smoothstep(.01,.16,optical_depth);
  }else if(work_kind==4){
   float radius=UV.x;
   float front=formation;
@@ -171,9 +176,11 @@ void fragment(){
   float compression=smoothstep(.43,.60,cycle);
   float release=smoothstep(.60,.64,cycle)*(1.0-smoothstep(.66,.72,cycle));
   float facing=max(0.0,dot(facing_normal,normalize(vec3(-.4,.6,.8))));
-  vec3 nucleus=mix(vec3(.22,.58,.78),vec3(.82,.99,1.0),facing);
-  color=mix(nucleus,vec3(1.0),compression*.55+release*.45)*strength;
-  opacity=smoothstep(.01,.50,abs(facing_normal.z));
+  float arris=1.0-abs(facing_normal.z);
+  vec3 nucleus=mix(vec3(.05,.68,.96),vec3(.68,1.15,1.25),facing*.50+arris*.40);
+  color=mix(nucleus,vec3(1.25),compression*.40+release*.30)*strength;
+  opacity=(.22+arris*.25+compression*.14)*smoothstep(.01,.20,abs(facing_normal.z));
+  if(work_zone==1){color=vec3(.55,1.15,1.25)*strength;opacity=.95;}
  }else if(work_kind==10){
   float facing=max(0.0,dot(facing_normal,normalize(vec3(-.4,.6,.8))));
   vec3 dark=transfer_layer>0.0?vec3(.05,.40,.62):vec3(.015,.20,.36);

@@ -72,6 +72,20 @@ func _init() -> void:
 	_environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
 	_environment.ambient_light_color=Color("3c6592")
 	_environment.ambient_light_energy=.26
+	# The same broad cool hull / warm deck environment is reflected by metal.
+	# This is initialized once for the cached structure, never per work tick.
+	var sky_material:=ProceduralSkyMaterial.new()
+	sky_material.sky_top_color=Color("20394f")
+	sky_material.sky_horizon_color=Color("9eb8c8")
+	sky_material.ground_horizon_color=Color("b6a17c")
+	sky_material.ground_bottom_color=Color("122132")
+	sky_material.sky_energy_multiplier=.65
+	sky_material.ground_energy_multiplier=.45
+	var sky:=Sky.new()
+	sky.radiance_size=Sky.RADIANCE_SIZE_128
+	sky.sky_material=sky_material
+	_environment.sky=sky
+	_environment.reflected_light_source=Environment.REFLECTION_SOURCE_SKY
 	var environment_node:=WorldEnvironment.new()
 	environment_node.environment=_environment
 	_baker.add_child(environment_node)
@@ -183,7 +197,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 	elif kind in [12,14]:part.z_index=2
 	elif kind==10:part.z_index=4 if title.get_slice("packet ",1) in ["weapons","condensation"] else 0
 	elif kind==3:part.z_index=1
-	elif kind==2:part.z_index=0
+	elif kind==2:part.z_index=2
 	var bottom: float=-INF
 	var right: float=-INF
 	for index in range(node.mesh.get_surface_count()):
@@ -241,6 +255,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			material.set_meta("outlet",id)
 		if kind==11:material.set_shader_parameter("receiver_u",float(_layout.ports[key].receiver_u))
 		if kind==8:material.set_shader_parameter("work_zone",2 if title.begins_with("weapon output") else 1 if title.begins_with("weapon") else 0)
+		if kind==9:material.set_shader_parameter("work_zone",1 if "cyan" in String(original.resource_name).to_lower() else 0)
 		if kind==4:material.set_shader_parameter("work_zone",1 if "bowed" in title else 0)
 		if kind==5:material.set_shader_parameter("work_zone",0 if "pour" in title else 3 if "outlet" in title else 2 if "liquid" in title else 1)
 		drawable.material=material
