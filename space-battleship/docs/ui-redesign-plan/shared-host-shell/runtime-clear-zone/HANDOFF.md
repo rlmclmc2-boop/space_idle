@@ -4,12 +4,13 @@
 
 ## 当前版本与同源证据
 
-- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `80b7b2ea`，未合main。
+- 工作区 `/workspace/space_idle`，分支 `design/clear-zone-host`，运行源 `c0f19517b`，未合main。
 - 反应堆 `cfcc9a3552a886283ed07be656ff7247c8a498bf` 的十四件installation闭包逐blob同源，包含私有GLB、Stage、shader及metadata；Owner/原生控件不替换。源交接14f1e0bd；installation在 `archive/reactor-material-refinement-20261101@564cc030:modules/reactor/depth-light-20261101/installation.json`。
-- 星球固定 `e821974f8` 的四GLB、设施场景/轨道、rotating/spine_opaque两个shader及cloud-density云图九件逐blob同源。planet_visual保留整组包络与固定环境；planet_panel业务/UI与安全区保持。
-- 本轮精确更新四GLB与planet_facility_scene五件，包含作业甲板、铰接机械臂、停靠船与服务舱。公共planet_visual.gd与planet_nebula.gdshader逐blob保持fa502483：固定环境内sky乘色0.52/0.62/0.76、气体透明度0.32/上部退后权重0.80、原柔光透明度0.32；其他环境保持默认。后续原组shader更新须保留两个uniform默认值与宿主参数，不整文件覆盖公共适配。无新控件/遮盖层，建筑体量和战场未改。
+- 星球固定 `2293ccd1876c1ab124564f8e5a57bc88578e3846` 的四GLB、设施场景/轨道、rotating/spine_opaque两个shader及cloud-density云图及两张远景贴图十一件逐blob同源。planet_visual保留整组包络与固定环境；planet_panel业务/UI与安全区保持。
+- 本轮精确更新四GLB、加入small_moon/faceted_asteroid两张RGBA贴图，并把原组planet_visual的贴图引用/绘制差异合入当前宿主。公共nebula曝光shader逐blob保持fa502483，planet_visual保留其固定环境、曝光与整组包络。建筑体量/业务和战斗不改，未使用原组整脚本覆盖宿主。
+- 固定环境内sky乘色0.52/0.62/0.76、气体透明度0.32/上部退后0.80、原柔光0.32。后续nebula更新继续保留uniform与宿主参数。新小天体使用subject的orbit_back_layer，随详情台主体重排缩放，气体层连续固定。
 
-星球当前同版证据：`archive/design-docs-before-cleanup-20261031@0d903b67884c482b7f946a34317ff9ec311766db:modules/public-ui/planet-v54-shared-20261101/README.md`。五张1440×900原PNG/同尺寸JPEG、总览/设施各6秒180帧动画、无损分片与哈希、半秒整页抽帧、前设施1:1前后对照、批准图等球径并置及author-review.md；before两图来自fa502已有原PNG。当前source.json核九件原组同源文件、保留公共两文件与其余模块/业务源；run.log末行的c063标签为驱动沿用静态打印，实际版本以Git/blob为准。
+星球当前同版证据：`archive/design-docs-before-cleanup-20261031@6cc685e0c92c1f7bcf4de0b6574bc89d14180418:modules/public-ui/planet-v56-shared-20261101/README.md`。五张1440×900原PNG/同尺寸JPEG、总览/设施各6秒180帧动画、无损分片与哈希、半秒整页抽帧、前设施1:1前后对照及批准图等球径并置。source.json记录十一件原组同源文件与公共/业务保留文件，author-review.md记录本版整页判断。before两图来自80b7已有原PNG。
 
 反应堆当前同版证据：`archive/design-docs-before-cleanup-20261031@4d4ec6cddc516b034a025ef179da840346ead3f8:modules/public-ui/reactor-depth-light-shared-20261101/README.md`。运行774deace的五张1440×900原PNG/同尺寸高质量JPEG、四路/单炼铁各6秒180连续帧、无损分片/哈希、逐帧总览、批准整图共同屏幕比例并置及author-review.md。
 
@@ -35,7 +36,9 @@
 
 本轮公共背景上方与四周亮蓝气带退后，总览与三种展开高度下地表/设施先于云层成为视线焦点；下角弱气带保留连续环境变化。固定背景未跟随主体缩放重置，主次较清楚，右侧战场层次保持。没有通过遮缝层或改变建筑大小来解决背景。
 
-新增甲板和压暗/缩窄停靠船减少前设施大亮面；制造区瓦片、货物和机械臂分开可读，船坞开放甲板较清楚。但按批准图仍非完整还原稿：服务舱/制造侧舱的方整重复轮廓明显，压力厚壳、开口内暗面与接轨包覆受光不足；坞台与停靠船虽分开，船体前后体块/内构仍简略。制造井/甲板偏薄平，黄梁抢过暖内腔，厚侧墙和暖光反射欠缺。上方指挥节点、穹顶下层承托仍浅，背景细气丝/小天体纵深尚未完整还原。当前不交用户确认、不等用户；原组继续这些资产和材质，具体整页判断见同版author-review.md。
+本轮制造区低连续侧壳比独立方柱更成整体，工作窗/甲板/黄梁可分读；船坞开放中泊位与停靠船关系保持，端肩斜截面可见。小月球与下缘岩石补入前后空间，整体主体仍先于气带进入视线。
+
+按批准图仍非完整还原稿：船坞门架由硬方块并排主导，一体压力壳、凹入舱口与厚内壁受光不足，接轨白环与肩架包覆关系弱；制造井/长台侧墙与工作窗偏平，黄梁比暖内腔抢。上方多层窗舱和穹顶承托简化。岩石少量同形三角分面较孤立，未达到原图远近/密度节奏。原组继续这些具体整体/材料差距，当前不交用户确认、不等用户。公共主体安全区未见需要新增盖板或挤战场的几何问题；本版观看范围详见author-review.md。
 
 ## 公共接入边界与下一步
 
@@ -43,7 +46,7 @@
 
 可消费公共源ee0e2ff1：`src/ui/zone_shell.gd`，`assets/ui/public_shell/command-rail.svg`、`navigation-spine.svg`、`nav-idle.svg`、`nav-hover.svg`、`nav-active.svg`（均在space-battleship），删除旧title-plaque.svg。BridgeTheme API与Owner不改；设计要求归13，不在交接另立规范。
 
-1. 星球e821五文件闭包及同壳整页/动态交接完成；公共曝光/连续覆盖与主体适配保留。后续nebula素材/shader更新需合并公共uniform和曝光参数，不回到整页高亮。
+1. 星球2293固定资产与小天体闭包及同壳整页/动态交接完成；公共曝光/连续覆盖与主体适配保留。后续nebula素材/shader更新需合并公共uniform和曝光参数，不回到整页高亮。
 2. 反应堆原组继续武器侧护壳/盾后机体分件、舱室远近明暗、局部受光及单路重心；固定更新后精确消费并重看公共整页。
 3. 星球原组继续前设施内件、局部光聚焦与面板材质，固定更新后按批准图复看完整页面。
 4. 目标机性能依赖单列，当前无同条件目标环境基线，不用离线记录或软件观察替代，不新增无关复测或合main。
