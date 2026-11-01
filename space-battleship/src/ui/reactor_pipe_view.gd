@@ -3,18 +3,7 @@ extends Control
 const SOURCE_SIZE := Vector2(1187.0, 1326.0)
 const VIEW_SIZE := Vector2(808.0, 835.0)
 const LUMEN := preload("res://assets/ui/reactor/b01/modular-pipe-lumen.gdshader")
-const ROUTES := {
-	"weapons": [Vector2(448,249), Vector2(408,220), Vector2(370,195), Vector2(318,208)],
-	"defence": [Vector2(741,247), Vector2(789,205), Vector2(848,184), Vector2(916,199)],
-	"smelting": [Vector2(463,450), Vector2(410,479), Vector2(360,533), Vector2(313,517)],
-	"condensation": [Vector2(729,446), Vector2(776,482), Vector2(819,530), Vector2(889,518)],
-}
-const PIPE_BOUNDS := {
-	"weapons": {"shell":Vector2(312,182), "front":Vector2(311,178)},
-	"defence": {"shell":Vector2(726,171), "front":Vector2(723,168)},
-	"smelting": {"shell":Vector2(305,430), "front":Vector2(304,427)},
-	"condensation": {"shell":Vector2(715,428), "front":Vector2(713,425)},
-}
+const PortContract = preload("res://src/ui/reactor_port_contract.gd")
 
 var _shell: Sprite2D
 var _front: Sprite2D
@@ -28,17 +17,20 @@ func _init() -> void:
 	set_process(false)
 
 func configure(id: String) -> void:
-	assert(ROUTES.has(id))
+	assert(PortContract.device(id).has("device_port"))
 	for child in get_children(): child.queue_free()
-	_shell = _texture_layer("res://assets/ui/reactor/b01/modular-pipe-%s-shell.png" % id, PIPE_BOUNDS[id].shell)
+	var spec: Dictionary = PortContract.device(id)
+	_shell = _texture_layer("res://assets/ui/reactor/b01/modular-pipe-%s-shell.png" % id,
+		Vector2(spec.pipe_shell_rect[0],spec.pipe_shell_rect[1]))
 	_lumen = MeshInstance2D.new()
-	_lumen.mesh = _arc_mesh(ROUTES[id])
+	_lumen.mesh = _arc_mesh(PortContract.route(id),spec)
 	_light = ShaderMaterial.new()
 	_light.shader = LUMEN
 	_lumen.material = _light
 	_lumen.visible = false
 	add_child(_lumen)
-	_front = _texture_layer("res://assets/ui/reactor/b01/modular-pipe-%s-front.png" % id, PIPE_BOUNDS[id].front)
+	_front = _texture_layer("res://assets/ui/reactor/b01/modular-pipe-%s-front.png" % id,
+		Vector2(spec.pipe_front_rect[0],spec.pipe_front_rect[1]))
 
 func set_workload(value: float) -> void:
 	_load = clampf(value, 0.0, 1.0)
@@ -62,7 +54,7 @@ static func _curve(p: Array, t: float) -> Vector2:
 	var u := 1.0-t
 	return p[0]*u*u*u + p[1]*3.0*u*u*t + p[2]*3.0*u*t*t + p[3]*t*t*t
 
-static func _arc_mesh(route: Array) -> ArrayMesh:
+static func _arc_mesh(route: Array, spec: Dictionary) -> ArrayMesh:
 	const STEPS := 96
 	var pts := PackedVector2Array()
 	var lengths := PackedFloat32Array()
@@ -72,20 +64,26 @@ static func _arc_mesh(route: Array) -> ArrayMesh:
 		if i > 0: length += p.distance_to(pts[i-1])
 		pts.append(p)
 		lengths.append(length)
+	var axis := Vector2(spec.axis_to_device[0],spec.axis_to_device[1]).normalized()
+	for i in range(1,13):
+		var p: Vector2 = route[3] + axis*float(spec.insert_depth)*float(i)/12.0
+		length += p.distance_to(pts[-1])
+		pts.append(p)
+		lengths.append(length)
 	var vertices := PackedVector3Array()
 	var uvs := PackedVector2Array()
 	var indices := PackedInt32Array()
 	var scale := VIEW_SIZE / SOURCE_SIZE
-	for i in range(STEPS+1):
+	for i in range(pts.size()):
 		var prev: Vector2 = pts[maxi(0,i-1)]
-		var next: Vector2 = pts[mini(STEPS,i+1)]
+		var next: Vector2 = pts[mini(pts.size()-1,i+1)]
 		var tangent := (next-prev).normalized()
 		var normal := Vector2(-tangent.y,tangent.x)
 		for side in [-1.0,1.0]:
 			var p: Vector2 = (pts[i]+normal*9.0*side)*scale
 			vertices.append(Vector3(p.x,p.y,0.0))
 			uvs.append(Vector2(lengths[i]/maxf(length,0.001),(side+1.0)*0.5))
-		if i < STEPS:
+		if i < pts.size()-1:
 			var k := i*2
 			indices.append_array(PackedInt32Array([k,k+1,k+2,k+1,k+3,k+2]))
 	var arrays := []
