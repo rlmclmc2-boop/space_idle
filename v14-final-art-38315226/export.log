@@ -1,0 +1,465 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+09:30:59 | INFO: Starting glTF 2.0 export
+09:30:59 | INFO: Extracting primitive: Cube.010
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.013
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cylinder
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Common flared primary load bank
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Common flared primary load bank.001
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.001
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.003
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.005
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.002
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.004
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.006
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.007
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.008
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.009
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.001
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.002
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.003
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Torus
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Habitation wing pitched roof
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Habitation wing pitched roof.001
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cylinder.002
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cylinder.001
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Torus.002
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cone
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Torus.001
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cone.001
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Integrated tapered pressure socket
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.012
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.015
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.011
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.014
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.136
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.137
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Swept outboard habitation wing
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Swept outboard habitation wing.001
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Visible heavy socket-to-ring shear key
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Visible heavy socket-to-ring shear key.001
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Finished glTF 2.0 export in 0.09641337394714355 s
+
+EXPORTED auto_explore /workspace/space_idle/space-battleship/assets/planets/facilities_v8/auto_explore.glb
+09:30:59 | INFO: Starting glTF 2.0 export
+09:30:59 | INFO: Extracting primitive: Cone.002
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cone.003
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Common flared primary load bank.002
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Common flared primary load bank.003
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.017
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cylinder.004
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.046
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.019
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.021
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.016
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.018
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.020
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.138
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.139
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.140
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.047
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.048
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.045
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.004
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.005
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.006
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.007
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.043
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.044
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Furnace lower buttress shell
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Furnace lower buttress shell.001
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.023
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.024
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.025
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.026
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.027
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.028
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.029
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.030
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Torus.003
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Torus.004
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Torus.005
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Integrated tapered pressure socket.001
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.022
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Open crucible trough returning into ring service bay
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.035
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.041
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.033
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.039
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.036
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.042
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Tall angled chamber armor
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Tall angled chamber armor.001
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cylinder.003
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.031
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.037
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.032
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.038
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Visible heavy socket-to-ring shear key.002
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Visible heavy socket-to-ring shear key.003
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.034
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.040
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Finished glTF 2.0 export in 0.1104588508605957 s
+
+EXPORTED refinery /workspace/space_idle/space-battleship/assets/planets/facilities_v8/refinery.glb
+09:30:59 | INFO: Starting glTF 2.0 export
+09:30:59 | INFO: Extracting primitive: Common flared primary load bank.004
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Common flared primary load bank.005
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.050
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.105
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.052
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.054
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.049
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.051
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.053
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.056
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.058
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.100
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.008
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.009
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.010
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.011
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.106
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.107
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.108
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.109
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.085
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.088
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.091
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.094
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.083
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.086
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.089
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.092
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.095
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.084
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.087
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.090
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.093
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Integrated tapered pressure socket.002
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.059
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.062
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.061
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.064
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.073
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.082
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.072
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.081
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.067
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.069
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.071
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.076
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.078
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.080
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.065
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.074
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.066
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.068
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.070
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.075
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.077
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.079
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.057
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Open manufacture panel suspended over workpiece
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Open manufacture panel suspended over workpiece.001
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.055
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Pitched armored production canopy around open work slot
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Pitched armored production canopy around open work slot.001
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Rear sealed fabrication vault
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Sloped armored end roof over production bay
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Sloped armored end roof over production bay.001
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Three stepped armored fabrication roof cassettes
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Three stepped armored fabrication roof cassettes.001
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Three stepped armored fabrication roof cassettes.002
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.102
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.103
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.104
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.060
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.063
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Twin long armored production hall sidewalls
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Twin long armored production hall sidewalls.001
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.101
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Upper lengthwise pressure clerestory
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Upper lengthwise pressure clerestory.001
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.099
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.096
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.097
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.098
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Visible heavy socket-to-ring shear key.004
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Visible heavy socket-to-ring shear key.005
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Finished glTF 2.0 export in 0.1860945224761963 s
+
+EXPORTED equipment /workspace/space_idle/space-battleship/assets/planets/facilities_v8/equipment.glb
+09:30:59 | INFO: Starting glTF 2.0 export
+09:30:59 | INFO: Extracting primitive: Angled armored dock root into open fork
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Angled armored dock root into open fork.001
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.118
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Common flared primary load bank.006
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Common flared primary load bank.007
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.111
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.122
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.126
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.113
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.115
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.110
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.112
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.114
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.141
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.128
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.130
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Torus.006
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.133
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.132
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.121
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.125
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.012
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.013
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.014
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Four flared armored spine transitions.015
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.127
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.129
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.131
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.117
+09:30:59 | INFO: Primitives created: 2
+09:30:59 | INFO: Extracting primitive: Cube.116
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Open dock root pressure yoke
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.119
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.123
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Pointed shuttle nose beyond open clamp
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.134
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.135
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Shuttle swept armored wing
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Shuttle swept armored wing.001
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.120
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Cube.124
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Visible heavy socket-to-ring shear key.006
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Extracting primitive: Visible heavy socket-to-ring shear key.007
+09:30:59 | INFO: Primitives created: 1
+09:30:59 | INFO: Finished glTF 2.0 export in 0.08385586738586426 s
+
+EXPORTED shipyard /workspace/space_idle/space-battleship/assets/planets/facilities_v8/shipyard.glb
+Blender 4.3.2
+Read blend: "/workspace/space_idle/space-battleship/art_sources/planet_whole_concept_20261101/concept.blend"
+
+Blender quit
