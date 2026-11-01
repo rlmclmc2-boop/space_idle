@@ -14,7 +14,7 @@
     "missing": []
   },
   "host": {
-    "source": "203f21380ca9d242a106df5932d496ea6834a0c3",
+    "source": "b569f0e9d0728e13dc8af798149026cc94f004cf",
     "identical": 38,
     "different": [
       "space-battleship/docs/game-design/11-stage6-contract.md",
