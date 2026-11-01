@@ -1,0 +1,234 @@
+Extensions: writing cache failed ([Errno 30] Read-only file system: '/home/agent/.config/blender/4.3/extensions').
+Info: Saved "auto_explore.blend"
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+05:57:44 | INFO: Starting glTF 2.0 export
+05:57:44 | INFO: Extracting primitive: Cube.005
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.006
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.008
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.009
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Torus.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.002
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cylinder.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Torus.003
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Torus.002
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cylinder.002
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cone
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Torus
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.003
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cylinder
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Shared-ring pressure haunch
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Shared-ring pressure haunch.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.010
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.011
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.012
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.013
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.004
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.007
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Finished glTF 2.0 export in 0.06365609169006348 s
+
+Extensions: writing cache failed ([Errno 30] Read-only file system: '/home/agent/.config/blender/4.3/extensions').
+Info: Saved "refinery.blend"
+05:57:44 | INFO: Starting glTF 2.0 export
+05:57:44 | INFO: Extracting primitive: Sphere
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.002
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.013
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.014
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.015
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.008
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.016
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.004
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.006
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.005
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.007
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Torus
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Torus.002
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cylinder
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cylinder.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.009
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.011
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Torus.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.010
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Torus.003
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.012
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.003
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Sphere.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.017
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Ring-through furnace vault
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Shared-ring pressure haunch
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Shared-ring pressure haunch.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cone
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cone.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Finished glTF 2.0 export in 0.07463693618774414 s
+
+Extensions: writing cache failed ([Errno 30] Read-only file system: '/home/agent/.config/blender/4.3/extensions').
+Info: Saved "equipment.blend"
+05:57:44 | INFO: Starting glTF 2.0 export
+05:57:44 | INFO: Extracting primitive: Cube
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.002
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Continuous manufacturing side girder
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Continuous manufacturing side girder.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.020
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.022
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.021
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.010
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.012
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.015
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.017
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.004
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.007
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.006
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.009
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.014
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.019
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.003
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.005
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.008
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Shared-ring pressure haunch
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Shared-ring pressure haunch.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.011
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.013
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.016
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.018
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Finished glTF 2.0 export in 0.054052114486694336 s
+
+Extensions: writing cache failed ([Errno 30] Read-only file system: '/home/agent/.config/blender/4.3/extensions').
+Info: Saved "shipyard.blend"
+05:57:44 | INFO: Starting glTF 2.0 export
+05:57:44 | INFO: Extracting primitive: Cube.015
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.014
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.004
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.007
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.005
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.006
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.008
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.009
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Torus
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.011
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.013
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Shuttle glass canopy
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Shuttle new tapered hull
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.010
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.012
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Fork dark understructure
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Fork dark understructure.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.002
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Cube.003
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Ring-to-dock continuous fork
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Extracting primitive: Ring-to-dock continuous fork.001
+05:57:44 | INFO: Primitives created: 1
+05:57:44 | INFO: Finished glTF 2.0 export in 0.05954790115356445 s
+
+Blender 4.3.2
+
+Blender quit
