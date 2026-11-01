@@ -157,6 +157,8 @@ def station(root, m):
     torus("Rotating open habitat collar", (0, 0, .12), .42, .075, m["armor"], spin)
     torus("Rotating inner glass", (0, 0, .12), .31, .028, m["glass"], spin)
     cylinder("Circular command lens", (0, 0, .18), .15, .045, m["service"], spin)
+    cone("Station slender command mast", (0,0,.52),.12,.045,.50,m["armor"],spin,16)
+    cylinder("Station amber beacon",(0,0,.80),.057,.11,m["signal"],spin,12)
     for side, name in ((-1, "SolarHingeLeft"), (1, "SolarHingeRight")):
         hinge = empty(name, root, (0, side*.92, .40))
         box("Folded solar vane", (0, side*.33, 0), (.62, .53, .045), m["machinery"], hinge)
@@ -204,6 +206,8 @@ def workshop(root,m):
         for side in (-1,1):
             beam("Inclined portal load leg",(x,side*.75,.47),
                  (x,side*.68,1.25),.17,.18,m["armor"],root)
+            beam("Triangulated open portal brace",(x,side*.72,.56),
+                 (x,side*.24,1.27),.09,.10,m["work"],root)
         beam("Open portal overhead truss",(x,-.72,1.28),
              (x,.72,1.28),.13,.16,m["work"],root)
     gantry=empty("GantrySlide",root,(0,0,0))
