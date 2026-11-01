@@ -1,0 +1,20 @@
+[
+  {
+    "pid": 37041,
+    "script": "/tmp/space-idle-runtime472/drop-sequence-observe.gd",
+    "uid": 1000,
+    "result": "SIGTERM sent"
+  },
+  {
+    "pid": 48290,
+    "script": "/tmp/space-idle-runtime472/planet-r17-shared-driver.gd",
+    "uid": 1000,
+    "result": "SIGTERM sent"
+  },
+  {
+    "pid": 70799,
+    "script": "/tmp/space-idle-runtime472/b57-combo-driver.gd",
+    "uid": 1000,
+    "result": "SIGTERM sent"
+  }
+]

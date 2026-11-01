@@ -61,3 +61,5 @@
 - 星球主体安全区与公共材质接入 `4e16d9fe`：[planet-subject-clearance-20261101](planet-subject-clearance-20261101/README.md)。
 
 - v8星球当前公共宿主组合 `3c63dc9a`：[planet-v8-shared-20261101](planet-v8-shared-20261101/README.md)。
+
+- v12星球公共整页与同版离线动态 `ee5377bf`：[planet-v12-shared-20261101](planet-v12-shared-20261101/README.md)。

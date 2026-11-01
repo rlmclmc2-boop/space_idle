@@ -1,0 +1,9 @@
+{
+  "end_process_frame": 301,
+  "fps": 30,
+  "method": "Godot --write-movie AVI; fixed 30fps process dt; original model and UI",
+  "simulated_seconds": 6,
+  "speed": 1,
+  "start_process_frame": 121,
+  "wall_seconds": 21.354
+}

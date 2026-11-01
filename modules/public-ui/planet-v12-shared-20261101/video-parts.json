@@ -1,0 +1,27 @@
+{
+  "video": "planet-v12-shared-1x-6s.mp4",
+  "bytes": 1326989,
+  "sha256": "722c1fc6c0da05b87a23979235597f811b2c8854217615126983825587f10fc0",
+  "width": 1440,
+  "height": 900,
+  "fps": 30,
+  "frames": 180,
+  "duration_seconds": 6,
+  "parts": [
+    {
+      "path": "video-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "27703ee0074c3dd2e47219a2b0a4deac73cfce3ff8d07bcfd2e4eaf53f575899"
+    },
+    {
+      "path": "video-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "2694f9ae17eaabb72cb2185cac71201b4279e4a22e4db81dedde45fa70bf80d2"
+    },
+    {
+      "path": "video-parts/part-002.bin",
+      "bytes": 16269,
+      "sha256": "8a41bfb3f428164da73167376714a2f520891b34e378a6bff637e124493a3e0b"
+    }
+  ]
+}
