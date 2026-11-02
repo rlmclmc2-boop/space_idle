@@ -195,6 +195,24 @@ def armor_arc(name,x,y,r,width,z,depth,m,start,end):
  bevel=o.modifiers.new('formed arc bevel','BEVEL');bevel.width=1.3;bevel.segments=2;o.modifiers.new('formed arc normals','WEIGHTED_NORMAL')
  return o
 
+def platform_girder(name,a,b,m):
+ # A closed I-section between the underside key and the hull anchor.
+ # All cross-section faces have actual depth; no painted triangular brace.
+ a=Vector((a[0],-a[1],a[2]));b=Vector((b[0],-b[1],b[2]))
+ axis=(b-a).normalized();lateral=Vector((1,0,0));up=axis.cross(lateral).normalized()
+ profile=[(-13,-12),(13,-12),(13,-7),(3.5,-7),(3.5,7),(13,7),(13,12),(-13,12),(-13,7),(-3.5,7),(-3.5,-7),(-13,-7)]
+ n=len(profile);vertices=[]
+ for center in (a,b):
+  for width,height in profile:vertices.append(center+lateral*width+up*height)
+ faces=[];roles=[]
+ for i in range(n):
+  j=(i+1)%n;faces.append((i,j,n+j,n+i));roles.append(1 if i in (0,1,5,6,7,11) else 0)
+ faces.extend([tuple(range(n-1,-1,-1)),tuple(n+i for i in range(n))]);roles.extend([1,1])
+ beam=oriented_solid(mesh(name,vertices,faces,m['shade']));beam.data.materials.append(m['steel'])
+ for face,role in zip(beam.data.polygons,roles):face.material_index=role
+ bevel=beam.modifiers.new('girder rolled arris','BEVEL');bevel.width=1.;bevel.segments=1
+ beam.modifiers.new('girder flange normals','WEIGHTED_NORMAL')
+
 def mount(name,x,y,w,m):
  left=x-w/2-10;right=x+w/2+22
  if y<400:
@@ -207,8 +225,15 @@ def mount(name,x,y,w,m):
  for side in (-1,1):
   q=x+side*w*.32
   if y<400:
-   plate(name+' wall bracket',[(q-12,y-8),(q+14,y-8),(q+20,y+28),(q-3,y+64),(q-13,y+58)],-8,28,m['dark'])
-   box(name+' wall anchor',q+10,y+29,24,63,-27,110,m['shade'])
+   platform_girder(name+' hull bearing girder',(q,y+3,-14),(q,y+64,-98),m)
+   armor_box(name+' platform underside key',q,y+3,36,20,-1,26,m['steel'])
+   # The closed back lands in the actual bulkhead, not next to its face.
+   outline=[(q-18,y+34),(q+18,y+34),(q+23,y+40),(q+23,y+86),(q+16,y+93),(q-16,y+93),(q-23,y+86),(q-23,y+40)]
+   plate(name+' hull anchor casting',outline,-82,60,m['shade'],shift=(-20.4,-13.8))
+   for dx in (-12,12):
+    for dy in (44,82):
+     ring(name+' anchor counterbore',q+dx,y+dy,4.8,1.5,-77,5,m['dark'],segments=8)
+     disc(name+' anchor captive head',q+dx,y+dy,3.1,-74,m['steel'],8)
   else:
    armor_box(name+' floor foot',q,y+8,44,27,16,30,m['shade'])
 
