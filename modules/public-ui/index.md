@@ -149,3 +149,5 @@
 - 反应堆进深/点光同壳 `b8f8f4cf`：[reactor-thermal-retort-shared-20261102](reactor-thermal-retort-shared-20261102/README.md)。
 
 - 反应堆进深/点光同壳 `e3c40278`：[reactor-core-yoke-shared-20261102](reactor-core-yoke-shared-20261102/README.md)。
+
+- 反应堆进深/点光同壳 `624c65ec`：[reactor-platform-support-shared-20261102](reactor-platform-support-shared-20261102/README.md)。

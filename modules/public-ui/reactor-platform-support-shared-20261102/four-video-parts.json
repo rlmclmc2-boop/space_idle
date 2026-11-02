@@ -1,0 +1,27 @@
+{
+  "video": "reactor-four-1x-6s.mp4",
+  "bytes": 1346633,
+  "sha256": "d9ee7cd7d2bea95e5579ab89da891d5a82de2d1d625082b61d091e8c08c82412",
+  "width": 1440,
+  "height": 900,
+  "fps": 30,
+  "frames": 180,
+  "duration_seconds": 6,
+  "parts": [
+    {
+      "path": "four-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "cecc81460bdfdefb4fffdef5022a1066d59d969aec7a4fa97b9da7c530986af6"
+    },
+    {
+      "path": "four-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "f26520135d4f6c7ff19e0bb337f0227608846bda64192ddfdd52840ba72be50c"
+    },
+    {
+      "path": "four-parts/part-002.bin",
+      "bytes": 35913,
+      "sha256": "b72e739b301dd88ed223451dc52142fa8eb306a8db6e6456b366519693c51027"
+    }
+  ]
+}
