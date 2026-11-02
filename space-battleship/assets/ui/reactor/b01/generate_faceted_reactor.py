@@ -400,10 +400,10 @@ def furnace(m):
  box('furnace dark lip',175,522,102,20,77,18,m['dark']);box('furnace tap',175,519,54,15,87,8,m['copper'])
  # A cast basin has a rolled rim, deep tapered wall and inner lining;
  # the working liquid remains a separate surface below that lip.
- vertices=[];sections=[(87,58),(90,44),(76,10),(66,10),(60,30),(67,48)];sides=24
- for r,z in sections:
+ vertices=[];sections=[(87,58,0),(90,44,4),(76,10,27),(66,10,20),(60,30,8),(67,48,0)];sides=24
+ for r,z,drop in sections:
   for i in range(sides):
-   a=math.tau*i/sides;vertices.append((176+r*math.cos(a),-597-r*.48*math.sin(a),z))
+   a=math.tau*i/sides;vertices.append((176+r*math.cos(a),-597-drop-r*.48*math.sin(a),z))
  faces=[];roles=[]
  for j in range(len(sections)):
   for i in range(sides):
@@ -417,9 +417,9 @@ def furnace(m):
  for polygon,role in zip(basin.data.polygons,roles):polygon.material_index=role
  # Close the bottom with a solid refractory plug, not an open annular ring.
  vertices=[]
- for r,z in [(66,10),(60,30)]:
+ for r,z,drop in [(66,10,20),(60,30,8)]:
   for i in range(sides):
-   a=math.tau*i/sides;vertices.append((176+r*math.cos(a),-597-r*.48*math.sin(a),z))
+   a=math.tau*i/sides;vertices.append((176+r*math.cos(a),-597-drop-r*.48*math.sin(a),z))
  faces=[(i,(i+1)%sides,(i+1)%sides+sides,i+sides) for i in range(sides)]
  faces.extend([tuple(range(sides-1,-1,-1)),tuple(sides+i for i in range(sides))])
  plug=oriented_solid(mesh('furnace basin refractory bottom',vertices,faces,m['ceramic']))
@@ -465,7 +465,20 @@ def furnace(m):
  for obj in bpy.context.scene.objects:
   if obj.name.startswith(('furnace vessel','furnace liquid')) and obj.type=='MESH':
    for vertex in obj.data.vertices:vertex.co.y=-597+(vertex.co.y+597)*.48
- for x in (114,233):box('furnace basin support',x,647,24,63,9,26,m['dark'])
+ # Formed ribs seat on the existing cast outer wall, not another overlaid bowl.
+ # The outlet notch (sectors 1/2) remains open all the way through.
+ for i in (0,4,7,10,13,16,19,22):
+  a=math.tau*(i+.5)/sides;half=.035
+  verts=[]
+  for r,z,drop in [(91,44,4),(78,10,27)]:
+   for angle in (a-half,a+half):
+    verts.append((176+r*math.cos(angle),-597-drop-r*.48*math.sin(angle),z+1))
+  rib=oriented_solid(mesh('furnace basin formed rib',verts,[(0,1,3,2)],m['steel']))
+  solid=rib.modifiers.new('rib cast thickness','SOLIDIFY');solid.thickness=3
+  bevel=rib.modifiers.new('rib worn arris','BEVEL');bevel.width=1;bevel.segments=1
+ for x in (114,233):
+  box('furnace basin support',x,653,27,58,9,30,m['dark'])
+  armor_box('furnace basin foot shoe',x,679,36,14,13,31,m['shade'])
  vent_bank('furnace side heat exchanger',247,486,15,38,99,4,m)
  service_panel('furnace access',96,479,22,40,110,m)
  for yy in (430,523):
