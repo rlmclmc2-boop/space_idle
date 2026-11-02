@@ -1,0 +1,15 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+NATIVE_TRACK_HIT id=weapons owner_ratio=0.5 slider_rect=[P: (236.8111, 618.5181), S: (270.0, 44.0)] ratio_anchor=(258.0, 8.0)
+SURFACE_PALETTE_ROLES { 2: 16, 0: 5, 1: 3, 4: 2, 7: 1, 5: 3, 3: 3, 6: 1 }
+ROOM_LIGHT_RUNTIME id=port position=(336.0, -38.54624, 173.464) energy=135.0 range=650.0
+ROOM_LIGHT_RUNTIME id=starboard position=(968.0, -38.54624, 173.464) energy=135.0 range=650.0
+VIDEO_CONTEXT paused={  } running=true focused=true pause_root=(1268.844, 31.875)
+VIDEO_START real_time=1x controlled_grants_and_wallet=true pid=258454 game_time=182.000000000036 phase=0.06666666666672
+[x11grab @ 0x55e8f51784c0] Cannot get the image data event_error: response_type:0 error_code:128 sequence:5 resource_id:4194304 minor_code:4 major_code:130.
+VIDEO_NATIVE_PAUSE frozen_phase=4.10000000000326 frozen_core_light=0.63074424189725
+VIDEO_END wall_s=12.334989 game_s=11.4000000000091 phase=10.3500000000082 ui_before={ "model_reads": 3, "quote_reads": 2, "preview_reads": 1, "commands": 1, "visible_frames": 123 } ui_after={ "model_reads": 4, "quote_reads": 3, "preview_reads": 1, "commands": 2, "visible_frames": 505 } stage_before={ "draws": 0, "field_updates": 3, "active_frames": 3, "cache_renders": 6 } stage_after={ "draws": 0, "field_updates": 4, "active_frames": 324, "cache_renders": 6 }
+VISUAL_OWNER 4 model={ "ok": true, "modules": [{ "id": "weapons", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "defence", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "smelting", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }, { "id": "condensation", "enabled": true, "ratio": 0.25, "load": 0.25, "has_free": false, "manual": "2.5e1", "free": "0e0", "effective": "2.5e1", "factor": "1.13132639022019e0" }], "load": 1.0, "capacity": "1e2", "allocated": "1e2", "remaining": "0e0", &"level": 1, &"can_allocate": true, &"reason": "" } stage_loads={ "core": 1.0, "weapons": 0.25, "defence": 0.25, "smelting": 0.25, "condensation": 0.25 }
