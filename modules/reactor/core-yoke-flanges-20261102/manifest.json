@@ -3,8 +3,8 @@
   "coverage": "controlled 1/2/3/4 zero/active whole-page; 1/4 normal videos/native track/equal/pause; no purchase or independent/user pass; target hardware unmeasured",
   "files": {
     "README.md": {
-      "bytes": 1541,
-      "sha256": "9d7b3c7645352b1ad8b9b6b75a368bb4df90544d4b88239da6dcef1adadf0f15"
+      "bytes": 1681,
+      "sha256": "121c1e2c0eedd5116d84c659f0c6ad30f57855eb206fbf74bb7aac08fec89683"
     },
     "approved-reference.jpg": {
       "bytes": 941252,
@@ -201,6 +201,10 @@
     "video-probe.json": {
       "bytes": 538,
       "sha256": "993721782f7d567399b8221cccd8f627d3930aaa46a01047498bb1e6f6fa09a1"
+    },
+    "video-timestamps.json": {
+      "bytes": 7492,
+      "sha256": "a85f53221b3e474bb17a067ecf3116dd8a0e8f220662b18ad933277137575ec1"
     },
     "visual-driver.gd": {
       "bytes": 7394,

@@ -9,3 +9,4 @@
 20份源码压缩闭包的大blob由source-closure.json说明分块顺序/SHA；JPEG低于1MiB，若视频超限见media-parts.json。作者判断见author-review.md，性能范围见performance.md。不宣告独审/用户/整页最终通过，不main。
 
 本版实际录像：四路12秒300帧/25fps，单路12秒298帧/平均24.833fps；采集请求25fps，按原始实际结果保存，不补帧，不作为游戏FPS。
+单路7.12→7.24秒有一次0.12秒采集间隔，四路最大0.04秒；原始时间戳见video-timestamps.json。两片均完整解码。
