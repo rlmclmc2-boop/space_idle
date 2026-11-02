@@ -147,3 +147,5 @@
 - 反应堆进深/点光同壳 `da1b2b08`：[reactor-condenser-focus-shared-20261101](reactor-condenser-focus-shared-20261101/README.md)。
 
 - 反应堆进深/点光同壳 `b8f8f4cf`：[reactor-thermal-retort-shared-20261102](reactor-thermal-retort-shared-20261102/README.md)。
+
+- 反应堆进深/点光同壳 `e3c40278`：[reactor-core-yoke-shared-20261102](reactor-core-yoke-shared-20261102/README.md)。

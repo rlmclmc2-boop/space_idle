@@ -1,0 +1,301 @@
+{
+  "runtime": "e3c402787966823b6ac93df58218573c8cb8cc17",
+  "reactor_source": "7ffb09396e938a78cc58360cc592f83782290d92",
+  "retained_host_planet": "9c34e6bc",
+  "planet_source": "4fd60ce37",
+  "public_carrier": "ee0e2ff1",
+  "reactor_blobs": {
+    "space-battleship/src/ui/reactor_scene.gd": "356dc27f33dfbbb36eeccbfbfe659258e1a79f48",
+    "space-battleship/src/ui/reactor_stage.gd": "d4fad86eac9855b42ffe83ee6a42822c16284758",
+    "space-battleship/assets/ui/reactor/b01/README.md": "74f02b2873fb6b72602e63d22906ae7b44413f3c",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-background.gdshader": "b095b2a85c0199e13c4f275cac52dacf34354b46",
+    "space-battleship/assets/ui/reactor/b01/faceted-canvas-work.gdshader": "e1cb469aad1e97f04e5ee87b59bc0fa3714c6377",
+    "space-battleship/assets/ui/reactor/b01/faceted-depth.gdshader": "11614cfd5aeebca0e8de631d29db6fca25485123",
+    "space-battleship/assets/ui/reactor/b01/faceted-layout.json": "f2d4c2ddf67bf4b28edd133db080b6ab9733926a",
+    "space-battleship/assets/ui/reactor/b01/faceted-module-icons.svg": "756f5c4c377f61ee086bad690f73c55b66534fb4",
+    "space-battleship/assets/ui/reactor/b01/faceted-plasma-work.gdshader": "c36267f8955d8c6f7ab28bd6050d5f82b1744df1",
+    "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb": "5b6dac5c8f870947f44052036ead8bde850d97af",
+    "space-battleship/assets/ui/reactor/b01/faceted-slider-knob.svg": "0cb2849cc13754fbfea1123863c7d028dbbdd8c1",
+    "space-battleship/assets/ui/reactor/b01/faceted-structure-outline.gdshader": "d693c5e23f3af0718939dbe0e00270b84430f250",
+    "space-battleship/assets/ui/reactor/b01/faceted-surface.gdshader": "adac97895eb15dea80a06aa6e08c7095962d2ac4",
+    "space-battleship/assets/ui/reactor/b01/faceted-work-common.gdshaderinc": "8a97b6fc749d5fcca96ef7302fbbdd6024fc6add",
+    "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py": "f1142f33d2df7d8e91ed044a692bf51a5410e163",
+    "space-battleship/assets/ui/reactor/b01/generate_plasma_atlas.py": "9640b3c1ef49c034a16c093b28155d948dccb0e0",
+    "space-battleship/assets/ui/reactor/b01/pack_plasma_atlas.py": "ba42f38d46109857a8161586e9ba4ed795dded08",
+    "space-battleship/assets/ui/reactor/b01/plasma-volume.json": "8851f45d56ca1eb2042a2f68078ad23636ac41d7",
+    "space-battleship/assets/ui/reactor/b01/plasma-volume.png": "e64079a5523f761a658deb1fd7aa3c34f6b40aa5",
+    "space-battleship/assets/ui/reactor/b01/reactor_ports.json": "198fcd42ace309588cc861b555d87479abba94a1"
+  },
+  "changed_paths": [
+    "space-battleship/assets/ui/reactor/b01/README.md",
+    "space-battleship/assets/ui/reactor/b01/faceted-layout.json",
+    "space-battleship/assets/ui/reactor/b01/faceted-reactor.glb",
+    "space-battleship/assets/ui/reactor/b01/generate_faceted_reactor.py"
+  ],
+  "preserved_blobs": {
+    "space-battleship/src/ui/zone_shell.gd": "fc9f760155f88a99a978e7d2b762327f178e9587",
+    "space-battleship/src/ui/bridge_theme.gd": "2783fad5744a78ad026bb5115141131ad76c463e",
+    "space-battleship/src/ui/equipment_panel.gd": "77943faafd9ffe09895e4bab1ddc5d3c0dac7119",
+    "space-battleship/src/ui/planet_panel.gd": "f3f56ba0f32e0e7953e637e2cf71b09953fc1a8d",
+    "space-battleship/src/main.gd": "c724b18e788059b5c48e173b0415153d9a8e0474",
+    "space-battleship/scripts/planet_visual.gd": "98e595df88e9b1272125a333d568eb8d5f18492e",
+    "space-battleship/scripts/planet_facility_scene.gd": "6a2cfa37d5d599e448b34bfffcd124bd037f2293",
+    "space-battleship/scripts/planet_orbital_spine.gd": "146fd5713a49e22b0f7660e84584a3a7bfe96c67",
+    "space-battleship/scripts/planet_nebula.gdshader": "14b71e15b23d6aeccb89d80b88140a1e1bdcffaa",
+    "space-battleship/scripts/rotating_planet.gdshader": "148cf66efbad8a490748330366b54fbbdfceabc2",
+    "space-battleship/assets/planets/facilities_v9/auto_explore.glb": "ffc7e56a7052bad554e17690e8db575cbae6eb0c",
+    "space-battleship/assets/planets/facilities_v9/equipment.glb": "cf82d545990e6f7edfe059be4a660be44303abe1",
+    "space-battleship/assets/planets/facilities_v9/refinery.glb": "10fe514d63082952158a38fa4ff10e4c4b603adf",
+    "space-battleship/assets/planets/facilities_v9/shipyard.glb": "b1b5da524c88015fbae4682417ddd03b665f2b88",
+    "space-battleship/scripts/planet_spine_opaque.gdshader": "fbe9747f042ad7a657761d67e4c1bfc6a2a65b6d",
+    "space-battleship/assets/planets/backdrop/small_moon.png": "1ac7e88039eab722d6cde22e46662d130e3f2aab",
+    "space-battleship/assets/planets/backdrop/faceted_asteroid.png": "95344890bbf207719e9cae659dfabaf159b48a5e"
+  },
+  "geometry": {
+    "module": [
+      0,
+      65,
+      808,
+      835
+    ],
+    "battle_projection": "unchanged"
+  },
+  "approved_reference": "24db2a9c:modules/public-ui/unified-abstraction-proposal-20261101/whole-game-style-concept.png",
+  "media": [
+    {
+      "path": "equipment-return.png",
+      "bytes": 1465639,
+      "sha256": "0a36d4a8b14b87285a970d75de3dab9e5a19315389e7f48b0b92887d1da8d5b2"
+    },
+    {
+      "path": "equipment-return.jpg",
+      "bytes": 614074,
+      "sha256": "76614af13827f95ee1ade11e258e13b77b7aa3d42fed74e45c772cc26cc48e55"
+    },
+    {
+      "path": "reactor-two-active.png",
+      "bytes": 893273,
+      "sha256": "13b0924465b073ebf1f30e2912e2c7be6eea57a9446556a8d3fc27309c672940"
+    },
+    {
+      "path": "reactor-two-active.jpg",
+      "bytes": 527990,
+      "sha256": "93d5c3ded25ed069f72c661658c2c1fb4d6127c0476d6d74479ba787f5c470b0"
+    },
+    {
+      "path": "reactor-two-zero.png",
+      "bytes": 869968,
+      "sha256": "424000a4398a188b67800d39e5b7df8ed89508f38d671f663e62451297e7461c"
+    },
+    {
+      "path": "reactor-two-zero.jpg",
+      "bytes": 489767,
+      "sha256": "7293ee0f0fcb05035a327c4fe1ad2c36d51ed57256d476d771b4a838d94754cd"
+    },
+    {
+      "path": "reactor-one-active.png",
+      "bytes": 884042,
+      "sha256": "f6476c46cf7e3cd423f3b8b0121254a3f0ef738959cf1f40843a5d234ce3678f"
+    },
+    {
+      "path": "reactor-one-active.jpg",
+      "bytes": 505965,
+      "sha256": "11e0124fda86dac948df3d6943cbdf26bb06668b99ea48fa148b42570fea1548"
+    },
+    {
+      "path": "reactor-one-zero.png",
+      "bytes": 846851,
+      "sha256": "c268b9782316c1fd6641049cf4e1502bf8f55b37cef09bf4c00adf6f2a8a8247"
+    },
+    {
+      "path": "reactor-one-zero.jpg",
+      "bytes": 471906,
+      "sha256": "b3317b1dfa6e996b55e5526271f586fc7f1a26192e449245921e4e9659150604"
+    },
+    {
+      "path": "reactor-four-active.png",
+      "bytes": 1021946,
+      "sha256": "332de62ad7dbb24a4b065a56d94f258d68b70d964804ed25357a1d9eedb044b0"
+    },
+    {
+      "path": "reactor-four-active.jpg",
+      "bytes": 600685,
+      "sha256": "576929c31ba9f5c8bd9b8f47901afc2c566bd4eff1715bca341a99e6f3b5b1cd"
+    },
+    {
+      "path": "reactor-four-zero.png",
+      "bytes": 994427,
+      "sha256": "38308ae0e76762a75a9e818ee39b49d4349cf70a32191b5bce8a72f331cc566a"
+    },
+    {
+      "path": "reactor-four-zero.jpg",
+      "bytes": 556293,
+      "sha256": "5e083d41b7f4cd82a2e36b90e4dcbfa14a9a55b9b6d095f97b459901c4099c83"
+    },
+    {
+      "path": "driver.gd",
+      "bytes": 6513,
+      "sha256": "681f27b89ffa3655cbd72c058528bbea3e33b73984017142ccea85ac3898d8c2"
+    },
+    {
+      "path": "run.log",
+      "bytes": 1084,
+      "sha256": "19fd2b761961797866064294a175ae81b1e16c5f5016397285cd7c7ce0f5289e"
+    },
+    {
+      "path": "import.log",
+      "bytes": 2251,
+      "sha256": "6d383e5e374d17311d4e494987878f78b182bafb249c5a88f18972c1c5ea3b42"
+    },
+    {
+      "path": "movie-segment.json",
+      "bytes": 362,
+      "sha256": "9d9d014e516d82ece9fa6a7045ae2d73b77d66ae29d823527baa1709e58510c2"
+    },
+    {
+      "path": "one-movie-segment.json",
+      "bytes": 352,
+      "sha256": "9c5447417d5f8bad8e42ea8c97e13792c3fb035184c79c53c5c67d1d178b54bc"
+    },
+    {
+      "path": "reactor-four-1x-6s.mp4",
+      "bytes": 1346937,
+      "sha256": "e6bd37ac4322ff0addaa0b4b22500598a5b3d19e2292324b157792dddf66f85f"
+    },
+    {
+      "path": "reactor-one-1x-6s.mp4",
+      "bytes": 1166716,
+      "sha256": "773dfc6facccbf7c9b68489c6bfafee02c33f8d17e154872b4cbd07883e7b70b"
+    },
+    {
+      "path": "four-video-parts.json",
+      "bytes": 724,
+      "sha256": "6a61ebc90efaff26c85511126f3a9e45eca2bc8f662bb4b4583003bc3f5a6fc3"
+    },
+    {
+      "path": "one-video-parts.json",
+      "bytes": 562,
+      "sha256": "2e4a925320171b969e9403e0290e0646d2462b8c536b219e45efc22990dd24c0"
+    },
+    {
+      "path": "author-review.md",
+      "bytes": 3199,
+      "sha256": "624e2ea034a8f19f1f550a0f5b3ed2c01f26121e60c7dbf06fde793cf8127dd1"
+    },
+    {
+      "path": "approved-vs-game-whole.jpg",
+      "bytes": 796491,
+      "sha256": "7cc8f72851632e1a6acf1c7febb5c3faa28c398c3fc77f93d33f32c57fbe23cc"
+    },
+    {
+      "path": "yoke-before-after.jpg",
+      "bytes": 497968,
+      "sha256": "995b3527afa776ca9370c7408c4e5805ea19541e515d7ae5668a18cd2e41a198"
+    },
+    {
+      "path": "four-half-second-review.jpg",
+      "bytes": 435627,
+      "sha256": "da1d0a73454b839b96751494110bd7cb0dd606228633197a131eb4787bdcfe3d"
+    },
+    {
+      "path": "four-review-6.jpg",
+      "bytes": 683451,
+      "sha256": "e5f636c8dc9454c8c307c6989700834e373857b36d149ec0e1baf36e56ccb2dd"
+    },
+    {
+      "path": "four-review-5.jpg",
+      "bytes": 688491,
+      "sha256": "29115d7adad2fbc653ff9f159c6017f07b38f8ffcd8b6c0fe59cca4a5500db7a"
+    },
+    {
+      "path": "four-review-4.jpg",
+      "bytes": 693872,
+      "sha256": "82ee21083cd7a4b938710e4a5646bf1ba3e49d0a74b3eea730b4dded348061e1"
+    },
+    {
+      "path": "four-review-3.jpg",
+      "bytes": 694192,
+      "sha256": "3ef2811328d1306a4793d93e78960d16c8e1f9a87a8c1622617c16bbc374df2f"
+    },
+    {
+      "path": "four-review-2.jpg",
+      "bytes": 693826,
+      "sha256": "66616d25d6ed44464db1c89d9fa8008e5988f2cda83f78758e68378b9a12822f"
+    },
+    {
+      "path": "four-review-1.jpg",
+      "bytes": 691427,
+      "sha256": "66eb0346b456a749fefa6617ecaefdacf6f9828a73b7d781d2d8a7005760436c"
+    },
+    {
+      "path": "four-parts/part-002.bin",
+      "bytes": 36217,
+      "sha256": "3d871b9e54632df84d20b028e3f8114a1e20575b1357b255fd214be2f787d2d3"
+    },
+    {
+      "path": "four-parts/part-001.bin",
+      "bytes": 655360,
+      "sha256": "c30115efe17adfb39788dcb6b72bd178c4a64dd76b92cb0134e7b7dcb5a6b42a"
+    },
+    {
+      "path": "four-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "c5b36549ae69e80a918f55e4138478e5ef5b0390aa90fb94e7e970a243229f42"
+    },
+    {
+      "path": "one-half-second-review.jpg",
+      "bytes": 378066,
+      "sha256": "afc5491249170d253d199d7cbb7774a3c0544cafd7273d6646a62478052834f6"
+    },
+    {
+      "path": "one-review-6.jpg",
+      "bytes": 621239,
+      "sha256": "926be8e8c07875fd5fa3e98be27dee8481ed5046cbd05b4441a9ab291837d738"
+    },
+    {
+      "path": "one-review-5.jpg",
+      "bytes": 607500,
+      "sha256": "f82cd2d34f659f77c33fb76e6e7e1fe51ababa6fb272ef6c40bc9d2df7bcbb6f"
+    },
+    {
+      "path": "one-review-4.jpg",
+      "bytes": 605425,
+      "sha256": "14d4956acae3e8e74fcee363e2ca19040c69d3aef42edd14ea7f8fc7dbd1a2c7"
+    },
+    {
+      "path": "one-review-3.jpg",
+      "bytes": 606127,
+      "sha256": "bff278f46cf73f142ac361da52c500cb47980f45aca0c57211aacabf98476c6d"
+    },
+    {
+      "path": "one-review-2.jpg",
+      "bytes": 614858,
+      "sha256": "810d7a0a069de86f9f385217a44498d42057f8c1467ae1cbe2a1c641bb5bc1ed"
+    },
+    {
+      "path": "one-review-1.jpg",
+      "bytes": 619196,
+      "sha256": "1c45e676fd48838e5f86b51b3f70d9025c1f8d099003dfca817354ac7718f7d5"
+    },
+    {
+      "path": "one-parts/part-001.bin",
+      "bytes": 511356,
+      "sha256": "62e6e9ec59fcdc8c6a325b05d1bc4557049e4c9df478c024dc1f3b3c788545df"
+    },
+    {
+      "path": "one-parts/part-000.bin",
+      "bytes": 655360,
+      "sha256": "6d408faee4498794ef267b4b2badd30cc336a5d2cc5256c4ca66b3f866dbc631"
+    },
+    {
+      "path": "approved-reference.jpg",
+      "bytes": 653566,
+      "sha256": "2dc24bda292182d9666277cfdf9bf7ec92731b3359c2b904f543821f1756580f"
+    },
+    {
+      "path": "installation.json",
+      "bytes": 1696,
+      "sha256": "b153344ddda4cf46fe81d42a7dca5fc8361319f4c6fe2fc4338ab94f52532858"
+    }
+  ]
+}
