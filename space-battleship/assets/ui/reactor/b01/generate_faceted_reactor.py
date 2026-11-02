@@ -15,6 +15,11 @@ CRYSTAL_CONVEYOR=[(1014,610,103),(990,640,151),(940,690,110)]
 CRYSTAL_FOCUS=(1017,466,77)
 CRYSTAL_SEED=(1017,592,78)
 FURNACE_FEED=[(175,435,68),(175,500,58)]
+ROOM_LIGHTS=(('port',336,35),('starboard',968,35))
+LUMINAIRE_MOUTH_Z=162
+LUMINAIRE_LENS_Z=144
+LUMINAIRE_EXIT_CLEARANCE=12
+LUMINAIRE_TILT=.30
 SHARD_CLEARANCE=6.6
 def deck_level(y):return -96+(y-553)*.14
 OUT=Path(os.environ.get('REACTOR_FACETED_BUILD','/tmp/reactor-faceted-build'));OUT.mkdir(parents=True,exist_ok=True)
@@ -745,6 +750,34 @@ def pipes(m):
  for id in DATA['devices']:channel_pipe(id,m)
 
 
+def ceiling_frame(x,y):
+ pivot=Vector((x,-y,LUMINAIRE_MOUTH_Z))
+ return Matrix.Translation(pivot)@Matrix.Rotation(LUMINAIRE_TILT,4,'X')@Matrix.Translation(-pivot)
+
+def ceiling_luminaire(id,x,y,m):
+ frame=ceiling_frame(x,y)
+ def contour(w,h,c):
+  return [(-w/2+c,-h/2),(w/2-c,-h/2),(w/2,-h/2+c),(w/2,h/2-c),(w/2-c,h/2),(-w/2+c,h/2),(-w/2,h/2-c),(-w/2,-h/2+c)]
+ rings=[(78,34,6,LUMINAIRE_MOUTH_Z),(64,25,4,116),(54,18,3,LUMINAIRE_MOUTH_Z),(46,12,2,134)]
+ vertices=[]
+ for w,h,c,z in rings:vertices.extend([(x+dx,-y-dy,z) for dx,dy in contour(w,h,c)])
+ faces=[];roles=[];n=8
+ for a,b,role in ((0,2,0),(0,1,1),(1,3,1),(2,3,2)):
+  for i in range(n):
+   j=(i+1)%n;faces.append((a*n+i,a*n+j,b*n+j,b*n+i));roles.append(role)
+ housing=oriented_solid(mesh('ceiling '+id+' recessed housing',[frame@Vector(v) for v in vertices],faces,m['steel']))
+ housing.data.materials.append(m['shade']);housing.data.materials.append(m['glass'])
+ for face,role in zip(housing.data.polygons,roles):face.material_index=role
+ bevel=housing.modifiers.new('luminaire cast lip','BEVEL');bevel.width=1.2;bevel.segments=1
+ housing.modifiers.new('luminaire face normals','WEIGHTED_NORMAL')
+ lens=box('ceiling '+id+' warm lens',x,y,42,10,LUMINAIRE_LENS_Z,4,m['lamp'])
+ lens.matrix_world=frame@lens.matrix_world
+ for side in (-1,1):
+  xx=x+side*24
+  armor_box('ceiling '+id+' suspension anchor',xx,y-25,18,16,-49,26,m['shade'])
+  end=frame@Vector((xx,-y+9,124))
+  rod('ceiling '+id+' suspension link',(xx,y-25,-55),(end.x,-end.y,end.z),4,m['steel'])
+
 def room(m):
  plate('aft bulkhead',[(-80,0),(W+80,0),(W+80,760),(-80,760)],-140,24,m['room'],shift=(0,0))
  # Staggered pressure plating belongs to one continuous bulkhead. Replace
@@ -770,10 +803,10 @@ def room(m):
  for left,right in [(-40,310),(354,785),(817,1230)]:
   plate('overhead coffering',[(left,0),(right,0),(right-55,61),(left+40,61)],-109,17,m['hull_high'],shift=(0,0))
   plate('overhead recess',[(left+35,4),(right-36,4),(right-68,42),(left+57,42)],-91,8,m['dark'],shift=(0,0))
- for x in (96,973):
+ for id,cx,cy in ROOM_LIGHTS:
+  x=cx-28
   plate('angled bay shoulder',[(x,0),(x+115,0),(x+84,64),(x+57,98),(x-8,138),(x-28,111)],-69,42,m['hull_high'])
-  box('overhead luminaire shell',x+30,72,73,25,-32,26,m['dark'])
-  box('overhead warm luminaire',x+28,78,50,8,-7,6,m['lamp'])
+  ceiling_luminaire(id,cx,cy,m)
  for yy in (109,362):
   box('aft transverse beam',594,yy,1060,18,-97,25,m['hull'])
   for x in (45,1139):box('beam side anchor',x,yy,34,52,-62,31,m['hull_high'])
@@ -1104,6 +1137,9 @@ def export_glb():
   marker.location=growth_basis@Vector((point[0],-point[1],point[2]))+growth_origin
   axis=Vector((0,-1,0)) if marker_name=='focus_axis_tip' else Vector((0,1,0))
   marker.rotation_euler=(growth_basis@axis).normalized().to_track_quat('Z','Y').to_euler()
+ for id,x,y in ROOM_LIGHTS:
+  for label,z in [('mouth',LUMINAIRE_MOUTH_Z),('lens',LUMINAIRE_LENS_Z),('emitter',LUMINAIRE_MOUTH_Z+LUMINAIRE_EXIT_CLEARANCE)]:
+   marker=bpy.data.objects.new('ceiling_'+id+'_'+label,None);bpy.context.collection.objects.link(marker);marker.parent=groups['bay'];marker.location=ceiling_frame(x,y)@Vector((x,-y,z));marker.rotation_euler=Matrix.Rotation(LUMINAIRE_TILT,3,'X').to_euler()
  # Export ordinary palette data, not Blender-only ShaderToRGB nodes. Godot
  # supplies the same faceted surface lighting plus distinct working shaders.
  for mat in bpy.data.materials:
@@ -1140,7 +1176,8 @@ def export_glb():
  focus=Vector((CRYSTAL_FOCUS[0],-CRYSTAL_FOCUS[1],CRYSTAL_FOCUS[2]));seed=Vector((CRYSTAL_SEED[0],-CRYSTAL_SEED[1],CRYSTAL_SEED[2]))
  growth_path={'conveyor':[[x,-y,z+SHARD_CLEARANCE] for x,y,z in CRYSTAL_CONVEYOR],'split':(Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length/((Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length+(Vector(CRYSTAL_CONVEYOR[2])-Vector(CRYSTAL_CONVEYOR[1])).length),
   'focus_author':list(focus),'seed_author':list(seed),'focus_axis_author':[0,-1,0],'seed_axis_author':[0,1,0],'irradiance_author':list((focus+seed)*.5+Vector((0,-10,39.5))),'focus_marker':'condensation/focus_axis_tip','seed_marker':'condensation/growth_seed_origin'}
- layout={'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],'work_frames':work_frames,'work_paths':{'condensation':growth_path,'smelting':{'feed_author':[[x,-y,z] for x,y,z in FURNACE_FEED],'throat_irradiance_author':[175,-486,80]}},
+ room_luminaires=[{'id':id,'marker':'bay/ceiling_'+id+'_emitter','mouth_marker':'bay/ceiling_'+id+'_mouth','lens_marker':'bay/ceiling_'+id+'_lens','position_source3d':list(ceiling_frame(x,y)@Vector((x,-y,LUMINAIRE_MOUTH_Z+LUMINAIRE_EXIT_CLEARANCE))),'mouth_source3d':list(ceiling_frame(x,y)@Vector((x,-y,LUMINAIRE_MOUTH_Z))),'lens_source3d':list(ceiling_frame(x,y)@Vector((x,-y,LUMINAIRE_LENS_Z))),'axis_source3d':list(Matrix.Rotation(LUMINAIRE_TILT,3,'X')@Vector((0,0,1))),'exit_clearance':LUMINAIRE_EXIT_CLEARANCE,'color':'ffb969','energy':1.35,'range':650.,'attenuation':1.35} for id,x,y in ROOM_LIGHTS]
+ layout={'room_luminaires':room_luminaires,'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],'work_frames':work_frames,'work_paths':{'condensation':growth_path,'smelting':{'feed_author':[[x,-y,z] for x,y,z in FURNACE_FEED],'throat_irradiance_author':[175,-486,80]}},
   'double_left':{'ids':['weapons','smelting'],'shifts':{'core':[170,0],'core_mount':[170,0],'weapons':[170,0],'smelting':[170,0]},'routes':double_routes},'single_smelting':{'shifts':{'core':[130,0],'core_mount':[130,0],'smelting':[200,-50]},'route':single,'core_marker':'core/power_out_single_smelting','device_marker':'smelting/power_in_smelting','receiver_u':receiver_u(single)},'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
  (ROOT/'faceted-layout.json').write_text(json.dumps(layout,indent=2))
  print('EXPORTED_FACETED_GEOMETRY',path,layout['asset_sha256'])
