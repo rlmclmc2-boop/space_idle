@@ -1,5 +1,3 @@
-# 反应堆资产使用
+# 反应炉素材入口
 
-当前制作采用B01独立核心、四设备、实体管路和完整控制区；具体装配与导入条件见M3资产契约。旧1364×1200双列金属版、BattleGame/reactor_visual入口不再是现行要求。main基线的旧控件不代表最新制作方向。
-
-现行制作和可见验收只见[M/V模块](../../../docs/game-design/art/modules/reactor.md)；本页只说明当前素材边界，不保留生成历史、旧验收报告或方案入口。
+现行制作目标、设备与管路呈现见[M3](../../../docs/game-design/art/modules/reactor.md)；制作、导入和装配关系见[资产契约](../../../docs/game-design/art/modules/reactor-asset-contract.md)。固定源码与当前一步由[任务交接](../../../docs/game-design/11-stage6-contract.md)定位。
