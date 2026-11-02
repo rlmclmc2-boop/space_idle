@@ -110,13 +110,14 @@ func _init() -> void:
 	light.directional_shadow_max_distance=3000
 	_baker.add_child(light)
 	light.look_at_from_position(Vector3(80,-20,650),Vector3(594,-400,0))
-	for x in [185.0,1010.0]:
+	for fixture in _layout.room_luminaires:
 		var luminaire:=OmniLight3D.new()
-		luminaire.position=Vector3(x,-78.0,180.0)
-		luminaire.light_color=Color("ffb969")
-		luminaire.light_energy=1.05*SOURCE_LIGHT_GAIN
-		luminaire.omni_range=650.0
-		luminaire.omni_attenuation=1.8
+		var emitter_point: Array=fixture.position_source3d
+		luminaire.position=Vector3(emitter_point[0],emitter_point[1],emitter_point[2])
+		luminaire.light_color=Color(str(fixture.color))
+		luminaire.light_energy=float(fixture.energy)*SOURCE_LIGHT_GAIN
+		luminaire.omni_range=float(fixture.range)
+		luminaire.omni_attenuation=float(fixture.attenuation)
 		luminaire.shadow_enabled=true
 		luminaire.shadow_opacity=.45
 		_baker.add_child(luminaire)
@@ -215,7 +216,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 			var original: Material=node.mesh.surface_get_material(index)
 			var color: Color=original.albedo_color if original is BaseMaterial3D else Color.WHITE
 			var material_name: String=String(original.resource_name).to_lower() if original!=null else ""
-			var role: int=6 if "thermal refractory" in material_name else 1 if "steel" in material_name else 3 if "ceramic" in material_name else 4 if "glass" in material_name else 5 if "copper" in material_name else 0 if "armor" in material_name else 2
+			var role: int=7 if material_name=="lamp" else 6 if "thermal refractory" in material_name else 1 if "steel" in material_name else 3 if "ceramic" in material_name else 4 if "glass" in material_name else 5 if "copper" in material_name else 0 if "armor" in material_name else 2
 			var palette_key: String=color.to_html()+":"+str(role)
 			if not _palette.has(palette_key):
 				var material:=ShaderMaterial.new()

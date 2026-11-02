@@ -1,7 +1,7 @@
 shader_type spatial;
 render_mode cull_disabled;
 uniform vec4 base_color : source_color = vec4(0.8,0.8,0.7,1.0);
-uniform int surface_role = 0; // coated armor / alloy / dark paint / ceramic / glass / copper / hot refractory
+uniform int surface_role = 0; // coated armor / alloy / dark paint / ceramic / glass / copper / hot refractory / fixed luminaire lens
 uniform float refractory_temperature=0.0;
 varying vec3 world_normal;
 void vertex(){
@@ -18,6 +18,7 @@ void fragment(){
  CLEARCOAT_ROUGHNESS=.50;
  AO=COLOR.r;
  AO_LIGHT_AFFECT=.28;
+ if(surface_role==7){EMISSION=base_color.rgb*.65;}
  if(surface_role==6){
   float heat=clamp(COLOR.g,0.0,1.0);
   EMISSION=mix(vec3(.65,.045,.004),vec3(2.0,.55,.04),heat)*pow(heat,1.4)*.8*refractory_temperature;

@@ -1,4 +1,68 @@
 {
+  "room_luminaires": [
+    {
+      "id": "port",
+      "marker": "bay/ceiling_port_emitter",
+      "mouth_marker": "bay/ceiling_port_mouth",
+      "lens_marker": "bay/ceiling_port_lens",
+      "position_source3d": [
+        336.0,
+        -38.546241760253906,
+        173.4640350341797
+      ],
+      "mouth_source3d": [
+        336.0,
+        -35.0,
+        162.0
+      ],
+      "lens_source3d": [
+        336.0,
+        -29.68063735961914,
+        144.80393981933594
+      ],
+      "axis_source3d": [
+        0.0,
+        -0.295520156621933,
+        0.9553365111351013
+      ],
+      "exit_clearance": 12,
+      "color": "ffb969",
+      "energy": 1.35,
+      "range": 650.0,
+      "attenuation": 1.35
+    },
+    {
+      "id": "starboard",
+      "marker": "bay/ceiling_starboard_emitter",
+      "mouth_marker": "bay/ceiling_starboard_mouth",
+      "lens_marker": "bay/ceiling_starboard_lens",
+      "position_source3d": [
+        968.0,
+        -38.546241760253906,
+        173.4640350341797
+      ],
+      "mouth_source3d": [
+        968.0,
+        -35.0,
+        162.0
+      ],
+      "lens_source3d": [
+        968.0,
+        -29.68063735961914,
+        144.80393981933594
+      ],
+      "axis_source3d": [
+        0.0,
+        -0.295520156621933,
+        0.9553365111351013
+      ],
+      "exit_clearance": 12,
+      "color": "ffb969",
+      "energy": 1.35,
+      "range": 650.0,
+      "attenuation": 1.35
+    }
+  ],
   "source_size": [
     1187,
     1326
@@ -778,6 +842,6 @@
       "receiver_u": 0.768051532791687
     }
   },
-  "generator_sha256": "31434eda18de44df5cc885b428345fe84507d114ee032e135e7250b76c63df0d",
-  "asset_sha256": "9ff2214736c2e172e644dd4a177d0eedefd5cf629544121a5b9c6be1663b84f1"
+  "generator_sha256": "76a261c729bc5dc16758972310007b73c90425e4928225008fdbdc9fb3dbab9e",
+  "asset_sha256": "2738bde6c9ceead1604360a31a2d19f90ba0ea84ad0916ba0caa329ac98c0a97"
 }
