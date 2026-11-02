@@ -1,0 +1,13 @@
+[
+  {
+    "group": "cleanup",
+    "source_branch": "docs/design-entry-cleanup-20261031",
+    "source": "fbe88d0a2cf9d9bb6723739e2e6b14fdc658a882",
+    "path": "space-battleship/docs/maintenance/HANDOFF.md",
+    "archive_path": "modules/maintenance/daily-cleanup-20261102/original/cleanup/space-battleship/docs/maintenance/HANDOFF.md",
+    "blob": "d1b5049de90228934b95aeead8248dde50dac834",
+    "sha256": "00f59fa09b4dda8af1f8229d177ae51d037ad069b3ad87060e117ebc2822cc57",
+    "action": "trim",
+    "reason": "更新本线程当前任务，移出已完成的上轮定向规范整理待办。"
+  }
+]

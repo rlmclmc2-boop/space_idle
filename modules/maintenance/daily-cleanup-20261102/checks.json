@@ -1,0 +1,61 @@
+{
+  "branches": {
+    "main": {
+      "files_changed": 78,
+      "deleted": 73,
+      "modified": 5,
+      "relative_links_introduced_errors": [],
+      "preexisting_missing_links_remaining": [],
+      "current_norms_and_handoffs_preserved": true
+    },
+    "cleanup": {
+      "files_changed": 72,
+      "deleted": 66,
+      "modified": 6,
+      "relative_links_introduced_errors": [],
+      "preexisting_missing_links_remaining": [],
+      "current_norms_and_handoffs_preserved": true
+    },
+    "equipment": {
+      "files_changed": 79,
+      "deleted": 73,
+      "modified": 6,
+      "relative_links_introduced_errors": [],
+      "preexisting_missing_links_remaining": [],
+      "current_norms_and_handoffs_preserved": true
+    },
+    "reactor": {
+      "files_changed": 82,
+      "deleted": 77,
+      "modified": 5,
+      "relative_links_introduced_errors": [],
+      "preexisting_missing_links_remaining": [],
+      "current_norms_and_handoffs_preserved": true
+    },
+    "planet": {
+      "files_changed": 94,
+      "deleted": 80,
+      "modified": 14,
+      "relative_links_introduced_errors": [],
+      "preexisting_missing_links_remaining": [],
+      "current_norms_and_handoffs_preserved": true
+    },
+    "host": {
+      "files_changed": 78,
+      "deleted": 73,
+      "modified": 5,
+      "relative_links_introduced_errors": [],
+      "preexisting_missing_links_remaining": [],
+      "current_norms_and_handoffs_preserved": true
+    },
+    "backend": {
+      "files_changed": 78,
+      "deleted": 73,
+      "modified": 5,
+      "relative_links_introduced_errors": [],
+      "preexisting_missing_links_remaining": [],
+      "current_norms_and_handoffs_preserved": true
+    }
+  },
+  "errors": []
+}

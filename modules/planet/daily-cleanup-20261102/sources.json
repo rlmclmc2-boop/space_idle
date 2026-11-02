@@ -1,0 +1,167 @@
+[
+  {
+    "group": "cleanup",
+    "source_branch": "docs/design-entry-cleanup-20261031",
+    "source": "fbe88d0a2cf9d9bb6723739e2e6b14fdc658a882",
+    "path": "space-battleship/docs/verification/planet-single-side-godot/README.md",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/cleanup/space-battleship/docs/verification/planet-single-side-godot/README.md",
+    "blob": "2a8f29bc73d6e96148e8c424cc7b65fafc8377df",
+    "sha256": "94137bcf7b318f1032357fc5dccb4a89120dd60aaf46b72e644f42e3390c3a3c",
+    "action": "trim",
+    "reason": "入口名称对应当前规范导航，不再误称证据入口。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/docs/verification/planet-single-side-godot/README.md",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/docs/verification/planet-single-side-godot/README.md",
+    "blob": "2a8f29bc73d6e96148e8c424cc7b65fafc8377df",
+    "sha256": "94137bcf7b318f1032357fc5dccb4a89120dd60aaf46b72e644f42e3390c3a3c",
+    "action": "trim",
+    "reason": "入口名称对应当前规范导航，不再误称证据入口。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/art_sources/planet_whole_concept_20261101/concept-complete.jpg",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/art_sources/planet_whole_concept_20261101/concept-complete.jpg",
+    "blob": "f08d8e33a25fe81aee99dfb2b1c2f04be5fea02f",
+    "sha256": "00bba039f371f7cdf4805d531e7a34fd66ea1c0df34e61f2c217858c4e44033c",
+    "action": "remove",
+    "reason": "当前交接唯一批准图已改为032b2f18细轨图；此目录宽实体环v19/v23预览只留档，生成器与blend源保留。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/art_sources/planet_whole_concept_20261101/concept-complete.png",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/art_sources/planet_whole_concept_20261101/concept-complete.png",
+    "blob": "6d0eb852d32d470338e564ad892d6aca9fdd7ba6",
+    "sha256": "76ec25596c1efed68f43ed414a6ec8a2c6645ab8e636bf6be88d5f0363e814fc",
+    "action": "remove",
+    "reason": "当前交接唯一批准图已改为032b2f18细轨图；此目录宽实体环v19/v23预览只留档，生成器与blend源保留。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/art_sources/planet_whole_concept_20261101/concept-v19.png",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/art_sources/planet_whole_concept_20261101/concept-v19.png",
+    "blob": "7994511340d34c280e712c8ad2c21015c163d697",
+    "sha256": "74d9d22a67c96ab21a46e7a98293009119fa5950a93769b867991ae811f87f6d",
+    "action": "remove",
+    "reason": "当前交接唯一批准图已改为032b2f18细轨图；此目录宽实体环v19/v23预览只留档，生成器与blend源保留。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/art_sources/planet_whole_concept_20261101/concept-v23.png",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/art_sources/planet_whole_concept_20261101/concept-v23.png",
+    "blob": "939be10ed6e779083b82e5d37ea0d9d88c76f286",
+    "sha256": "b1a9ca1d1c141da36b72a8f695abf7de549c416d138dab14c161ac2238629b03",
+    "action": "remove",
+    "reason": "当前交接唯一批准图已改为032b2f18细轨图；此目录宽实体环v19/v23预览只留档，生成器与blend源保留。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/art_sources/planet_whole_concept_20261101/silhouette-v19.png",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/art_sources/planet_whole_concept_20261101/silhouette-v19.png",
+    "blob": "694af550a7f3c75234d393b780819c6821e8cb7b",
+    "sha256": "ea64fc4fd420f7c5bfc0acc31d3da171abebb918971c76f717d3ae13b40d13b3",
+    "action": "remove",
+    "reason": "当前交接唯一批准图已改为032b2f18细轨图；此目录宽实体环v19/v23预览只留档，生成器与blend源保留。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/art_sources/planet_whole_concept_20261101/silhouette-v19.svg",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/art_sources/planet_whole_concept_20261101/silhouette-v19.svg",
+    "blob": "9e25c3e6ed27ddb454ec893b279526140fdd8f78",
+    "sha256": "2f5abecbaba51db12c96dec33016705fb5756e78cf2f32349eb645ba27ebcb5f",
+    "action": "remove",
+    "reason": "当前交接唯一批准图已改为032b2f18细轨图；此目录宽实体环v19/v23预览只留档，生成器与blend源保留。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/art_sources/planet_whole_concept_20261101/README.md",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/art_sources/planet_whole_concept_20261101/README.md",
+    "blob": "3862a31cae417ee1ed1b4c64aaee8410d8192493",
+    "sha256": "f1037f4f26af754fe1df082397105e0da160293f96d11e3e9c6b10371d30129f",
+    "action": "trim",
+    "reason": "保留源文件重建/导出用途，撤下已被细轨设计替代的宽实体环“当前制作依据”。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/art_sources/planet_integrated_v6/README.md",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/art_sources/planet_integrated_v6/README.md",
+    "blob": "c08c840beaba738650162a042d18dee81c67a4a9",
+    "sha256": "5bd02f7f5817c68912fe5edee76c272fed81dc156060823ab265fcc1d7bcd681",
+    "action": "trim",
+    "reason": "移出旧宽装甲环制作命令、已失效图稿导航及旧待审状态，保留生成器接口用途。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/assets/planets/facilities_v2/README.md",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/assets/planets/facilities_v2/README.md",
+    "blob": "a49da057923d75a48ac99555c37ecd330a8d247b",
+    "sha256": "1a58b2bd9a50307304961ab84210707c4dea4000705480dfafbd66c066a59fab",
+    "action": "trim",
+    "reason": "移出过时造型归属、旧审查/待审过程和失效证据导航；保留分件来源、材质与运动枢轴接口。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/assets/planets/facilities_v3/README.md",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/assets/planets/facilities_v3/README.md",
+    "blob": "7116e406642e0f6989ddddeabfc4345f74b3b839",
+    "sha256": "a2cdf4574bd465ac302436219f2adb265653f6765ca3e97c18d6638cd550808b",
+    "action": "trim",
+    "reason": "移出过时造型归属、旧审查/待审过程和失效证据导航；保留分件来源、材质与运动枢轴接口。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/assets/planets/facilities_v4/README.md",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/assets/planets/facilities_v4/README.md",
+    "blob": "ecc129ca134830f86c046b3cd0fd9726bc9989bb",
+    "sha256": "9bff4129f14de62f115b7307b0a35bc61568faccc9964a3d55809fb48b9923fa",
+    "action": "trim",
+    "reason": "移出过时造型归属、旧审查/待审过程和失效证据导航；保留分件来源、材质与运动枢轴接口。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/assets/planets/facilities_v5/README.md",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/assets/planets/facilities_v5/README.md",
+    "blob": "52ebb819c6c5475b338f1304ffbf382e9292bbda",
+    "sha256": "a160e2db677cd56a0b875aded3ae447098c5a5b360e67d2695e9a9ce672f3bd8",
+    "action": "trim",
+    "reason": "移出过时造型归属、旧审查/待审过程和失效证据导航；保留分件来源、材质与运动枢轴接口。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/assets/planets/painted-v4/README.md",
+    "archive_path": "modules/planet/daily-cleanup-20261102/original/planet/space-battleship/assets/planets/painted-v4/README.md",
+    "blob": "bf4c36584af442070fdf55e2e5a3c93c6513a4c0",
+    "sha256": "6d7eb32b5a0ab75a72485fba2f192574fe206a006db1554b9811f91869d5b1b9",
+    "action": "trim",
+    "reason": "移出旧R3检查点与失效证据导航，保留贴图用途和可重建来源。"
+  }
+]

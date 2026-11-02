@@ -11,3 +11,5 @@
 - [2026-11-01 已放弃方向文稿清理](20261101-retired-judgments/index.md)
 
 - [2026-11-01 美术稿件还原标准](20261101-design-fidelity/index.md)
+
+- [2026-11-02 资料清理](daily-cleanup-20261102/index.md)

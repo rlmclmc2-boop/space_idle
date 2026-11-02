@@ -1,0 +1,24 @@
+[
+  {
+    "group": "cleanup",
+    "source_branch": "docs/design-entry-cleanup-20261031",
+    "source": "fbe88d0a2cf9d9bb6723739e2e6b14fdc658a882",
+    "path": "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md",
+    "archive_path": "modules/equipment/daily-cleanup-20261102/original/cleanup/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md",
+    "blob": "26b4890f53318b30ff539d87732a41c2752b4005",
+    "sha256": "a560ef41965e6cf0bd686922ab46238779f22ad09fdf72b9feda65cb1cf41deb",
+    "action": "trim",
+    "reason": "入口名称对应当前规范导航，不再误称证据入口。"
+  },
+  {
+    "group": "equipment",
+    "source_branch": "art/equipment-materials-main-20261029",
+    "source": "9db928be1c6dd87feca0b0f072d9241aa351bfbc",
+    "path": "space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md",
+    "archive_path": "modules/equipment/daily-cleanup-20261102/original/equipment/space-battleship/docs/verification/equipment-hangar-godot/workbench-optical-revision/README.md",
+    "blob": "26b4890f53318b30ff539d87732a41c2752b4005",
+    "sha256": "a560ef41965e6cf0bd686922ab46238779f22ad09fdf72b9feda65cb1cf41deb",
+    "action": "trim",
+    "reason": "入口名称对应当前规范导航，不再误称证据入口。"
+  }
+]

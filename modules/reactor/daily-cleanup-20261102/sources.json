@@ -1,0 +1,156 @@
+[
+  {
+    "group": "main",
+    "source_branch": "main",
+    "source": "72a1c0554d4b668b636317f630404ccdf2792aa1",
+    "path": "space-battleship/assets/ui/reactor/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/main/space-battleship/assets/ui/reactor/README.md",
+    "blob": "4d07111155ed5b30b813ac5228787a8c08964d2a",
+    "sha256": "0a0920970e21369a219fd5faa1703d8c1b394dc39430ad98b4337a2ae815dadc",
+    "action": "trim",
+    "reason": "移出旧双列布局、旧消费者/控件和生成历史；现行B01规范及实际资产不变。"
+  },
+  {
+    "group": "cleanup",
+    "source_branch": "docs/design-entry-cleanup-20261031",
+    "source": "fbe88d0a2cf9d9bb6723739e2e6b14fdc658a882",
+    "path": "space-battleship/assets/ui/reactor/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/cleanup/space-battleship/assets/ui/reactor/README.md",
+    "blob": "d39147b2408cbe4cddd66825d11c9d6994b7183c",
+    "sha256": "06dd61a2be13077fe20d49fa1ac06ed2c5aa84bfdc39f886051bd2e3e5589860",
+    "action": "trim",
+    "reason": "移出旧双列布局、旧消费者/控件和生成历史；现行B01规范及实际资产不变。"
+  },
+  {
+    "group": "cleanup",
+    "source_branch": "docs/design-entry-cleanup-20261031",
+    "source": "fbe88d0a2cf9d9bb6723739e2e6b14fdc658a882",
+    "path": "space-battleship/docs/verification/reactor-centered-godot/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/cleanup/space-battleship/docs/verification/reactor-centered-godot/README.md",
+    "blob": "c19298654a8585798763af973a70601d005a16ca",
+    "sha256": "88b1e26b75e7d2590678eaf4f23a2b5defc17ec52a00b568765614dca2a81fa1",
+    "action": "trim",
+    "reason": "入口名称对应当前规范导航，不再误称证据入口。"
+  },
+  {
+    "group": "equipment",
+    "source_branch": "art/equipment-materials-main-20261029",
+    "source": "9db928be1c6dd87feca0b0f072d9241aa351bfbc",
+    "path": "space-battleship/assets/ui/reactor/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/equipment/space-battleship/assets/ui/reactor/README.md",
+    "blob": "4d07111155ed5b30b813ac5228787a8c08964d2a",
+    "sha256": "0a0920970e21369a219fd5faa1703d8c1b394dc39430ad98b4337a2ae815dadc",
+    "action": "trim",
+    "reason": "移出旧双列布局、旧消费者/控件和生成历史；现行B01规范及实际资产不变。"
+  },
+  {
+    "group": "reactor",
+    "source_branch": "implement/reactor-centered-godot",
+    "source": "0452638b089b61946bdfa65649efd4c1f9863717",
+    "path": "space-battleship/assets/ui/reactor/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/reactor/space-battleship/assets/ui/reactor/README.md",
+    "blob": "4d07111155ed5b30b813ac5228787a8c08964d2a",
+    "sha256": "0a0920970e21369a219fd5faa1703d8c1b394dc39430ad98b4337a2ae815dadc",
+    "action": "trim",
+    "reason": "移出旧双列布局、旧消费者/控件和生成历史；现行B01规范及实际资产不变。"
+  },
+  {
+    "group": "reactor",
+    "source_branch": "implement/reactor-centered-godot",
+    "source": "0452638b089b61946bdfa65649efd4c1f9863717",
+    "path": "space-battleship/assets/ui/reactor/centered-v1/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/reactor/space-battleship/assets/ui/reactor/centered-v1/README.md",
+    "blob": "ba598ae7a0918e629a7ce58b0a2dd380e6ac84ae",
+    "sha256": "bf6db4d08e1a00384893bd3fbd5c4a4f4541e292837aa1a91327cebbfb9aaa8b",
+    "action": "remove",
+    "reason": "旧整图/仪表/舱室方案说明，仅留档；当前B01分件源与元数据、运行资产保留。"
+  },
+  {
+    "group": "reactor",
+    "source_branch": "implement/reactor-centered-godot",
+    "source": "0452638b089b61946bdfa65649efd4c1f9863717",
+    "path": "space-battleship/assets/ui/reactor/ship-hub-r4/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/reactor/space-battleship/assets/ui/reactor/ship-hub-r4/README.md",
+    "blob": "809317898a4d4f3216b73c4b2dcd67d7854ecc65",
+    "sha256": "0f712e269a9cdf24f83e721866ba23b1351437b49846bad2a39ae959a5942da4",
+    "action": "remove",
+    "reason": "旧整图/仪表/舱室方案说明，仅留档；当前B01分件源与元数据、运行资产保留。"
+  },
+  {
+    "group": "reactor",
+    "source_branch": "implement/reactor-centered-godot",
+    "source": "0452638b089b61946bdfa65649efd4c1f9863717",
+    "path": "space-battleship/assets/ui/reactor/ship-hub-r5/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/reactor/space-battleship/assets/ui/reactor/ship-hub-r5/README.md",
+    "blob": "34696f3ab49a20258401b419b5b134b3ad7144ac",
+    "sha256": "f7ba0596f853b7e2ce703fbcb983a0f3e7cd48c370344c30895ea8651d1aad58",
+    "action": "remove",
+    "reason": "旧整图/仪表/舱室方案说明，仅留档；当前B01分件源与元数据、运行资产保留。"
+  },
+  {
+    "group": "reactor",
+    "source_branch": "implement/reactor-centered-godot",
+    "source": "0452638b089b61946bdfa65649efd4c1f9863717",
+    "path": "space-battleship/assets/ui/reactor/ship-hub-r6/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/reactor/space-battleship/assets/ui/reactor/ship-hub-r6/README.md",
+    "blob": "3a1b9b3b4d80b4afbad3d04581ac6fcf4c50b7a1",
+    "sha256": "76c2dac89ed147a786fbcb601536452489acac7c7898960af373161ab47950b6",
+    "action": "remove",
+    "reason": "旧整图/仪表/舱室方案说明，仅留档；当前B01分件源与元数据、运行资产保留。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/assets/ui/reactor/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/planet/space-battleship/assets/ui/reactor/README.md",
+    "blob": "4d07111155ed5b30b813ac5228787a8c08964d2a",
+    "sha256": "0a0920970e21369a219fd5faa1703d8c1b394dc39430ad98b4337a2ae815dadc",
+    "action": "trim",
+    "reason": "移出旧双列布局、旧消费者/控件和生成历史；现行B01规范及实际资产不变。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/assets/ui/reactor/centered-v1/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/planet/space-battleship/assets/ui/reactor/centered-v1/README.md",
+    "blob": "dd3cf12512b480e5002fb78eff618f5e557cd7b3",
+    "sha256": "9710718a9ca672f3dae3eff7a997da408e979c08e357854170070942a423dfa2",
+    "action": "remove",
+    "reason": "旧整图/仪表/舱室方案说明，仅留档；当前B01分件源与元数据、运行资产保留。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/docs/verification/reactor-centered-godot/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/planet/space-battleship/docs/verification/reactor-centered-godot/README.md",
+    "blob": "cb0874e95805e7bac17bae4021b95ee44fb56a86",
+    "sha256": "3be70342e2dd33f41a34ccc9ed8319b3e7dc49a9818a32ccba4f0344c3f5f7f8",
+    "action": "trim",
+    "reason": "移除749eccd1旧快照入口及旧交互复盘，不改变本分支运行资产。"
+  },
+  {
+    "group": "host",
+    "source_branch": "design/clear-zone-host",
+    "source": "11eca45ab6381cf0775e6aa29f51bea6f00fbf4b",
+    "path": "space-battleship/assets/ui/reactor/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/host/space-battleship/assets/ui/reactor/README.md",
+    "blob": "4d07111155ed5b30b813ac5228787a8c08964d2a",
+    "sha256": "0a0920970e21369a219fd5faa1703d8c1b394dc39430ad98b4337a2ae815dadc",
+    "action": "trim",
+    "reason": "移出旧双列布局、旧消费者/控件和生成历史；现行B01规范及实际资产不变。"
+  },
+  {
+    "group": "backend",
+    "source_branch": "feat/amount-safe-previews",
+    "source": "4ed909092399bee889e17600317791c8f16388a5",
+    "path": "space-battleship/assets/ui/reactor/README.md",
+    "archive_path": "modules/reactor/daily-cleanup-20261102/original/backend/space-battleship/assets/ui/reactor/README.md",
+    "blob": "4d07111155ed5b30b813ac5228787a8c08964d2a",
+    "sha256": "0a0920970e21369a219fd5faa1703d8c1b394dc39430ad98b4337a2ae815dadc",
+    "action": "trim",
+    "reason": "移出旧双列布局、旧消费者/控件和生成历史；现行B01规范及实际资产不变。"
+  }
+]

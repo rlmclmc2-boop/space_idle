@@ -1,0 +1,68 @@
+[
+  {
+    "group": "main",
+    "source_branch": "main",
+    "source": "72a1c0554d4b668b636317f630404ccdf2792aa1",
+    "path": "space-battleship/dev/factory_workshop/README.md",
+    "archive_path": "modules/research/daily-cleanup-20261102/original/main/space-battleship/dev/factory_workshop/README.md",
+    "blob": "383ddc510ae05e8aad06cc47a7a9c35716c0c7ce",
+    "sha256": "49c006593f6426f3ce31db9280e5096f0b8ca0eefd40c3bb7f675f753072a871",
+    "action": "remove",
+    "reason": "已停用独立样板的过程记录、旧审核与失效重现入口；保留全部样板源码，当前制作要求由M/V维护。"
+  },
+  {
+    "group": "equipment",
+    "source_branch": "art/equipment-materials-main-20261029",
+    "source": "9db928be1c6dd87feca0b0f072d9241aa351bfbc",
+    "path": "space-battleship/dev/factory_workshop/README.md",
+    "archive_path": "modules/research/daily-cleanup-20261102/original/equipment/space-battleship/dev/factory_workshop/README.md",
+    "blob": "383ddc510ae05e8aad06cc47a7a9c35716c0c7ce",
+    "sha256": "49c006593f6426f3ce31db9280e5096f0b8ca0eefd40c3bb7f675f753072a871",
+    "action": "remove",
+    "reason": "已停用独立样板的过程记录、旧审核与失效重现入口；保留全部样板源码，当前制作要求由M/V维护。"
+  },
+  {
+    "group": "reactor",
+    "source_branch": "implement/reactor-centered-godot",
+    "source": "0452638b089b61946bdfa65649efd4c1f9863717",
+    "path": "space-battleship/dev/factory_workshop/README.md",
+    "archive_path": "modules/research/daily-cleanup-20261102/original/reactor/space-battleship/dev/factory_workshop/README.md",
+    "blob": "383ddc510ae05e8aad06cc47a7a9c35716c0c7ce",
+    "sha256": "49c006593f6426f3ce31db9280e5096f0b8ca0eefd40c3bb7f675f753072a871",
+    "action": "remove",
+    "reason": "已停用独立样板的过程记录、旧审核与失效重现入口；保留全部样板源码，当前制作要求由M/V维护。"
+  },
+  {
+    "group": "planet",
+    "source_branch": "wip/planet-thread-resume-20261101",
+    "source": "962ad6461f4c4c7b9c6daada2344bb9475d5c0a5",
+    "path": "space-battleship/dev/factory_workshop/README.md",
+    "archive_path": "modules/research/daily-cleanup-20261102/original/planet/space-battleship/dev/factory_workshop/README.md",
+    "blob": "383ddc510ae05e8aad06cc47a7a9c35716c0c7ce",
+    "sha256": "49c006593f6426f3ce31db9280e5096f0b8ca0eefd40c3bb7f675f753072a871",
+    "action": "remove",
+    "reason": "已停用独立样板的过程记录、旧审核与失效重现入口；保留全部样板源码，当前制作要求由M/V维护。"
+  },
+  {
+    "group": "host",
+    "source_branch": "design/clear-zone-host",
+    "source": "11eca45ab6381cf0775e6aa29f51bea6f00fbf4b",
+    "path": "space-battleship/dev/factory_workshop/README.md",
+    "archive_path": "modules/research/daily-cleanup-20261102/original/host/space-battleship/dev/factory_workshop/README.md",
+    "blob": "383ddc510ae05e8aad06cc47a7a9c35716c0c7ce",
+    "sha256": "49c006593f6426f3ce31db9280e5096f0b8ca0eefd40c3bb7f675f753072a871",
+    "action": "remove",
+    "reason": "已停用独立样板的过程记录、旧审核与失效重现入口；保留全部样板源码，当前制作要求由M/V维护。"
+  },
+  {
+    "group": "backend",
+    "source_branch": "feat/amount-safe-previews",
+    "source": "4ed909092399bee889e17600317791c8f16388a5",
+    "path": "space-battleship/dev/factory_workshop/README.md",
+    "archive_path": "modules/research/daily-cleanup-20261102/original/backend/space-battleship/dev/factory_workshop/README.md",
+    "blob": "383ddc510ae05e8aad06cc47a7a9c35716c0c7ce",
+    "sha256": "49c006593f6426f3ce31db9280e5096f0b8ca0eefd40c3bb7f675f753072a871",
+    "action": "remove",
+    "reason": "已停用独立样板的过程记录、旧审核与失效重现入口；保留全部样板源码，当前制作要求由M/V维护。"
+  }
+]
