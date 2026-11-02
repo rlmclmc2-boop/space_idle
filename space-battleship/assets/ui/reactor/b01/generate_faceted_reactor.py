@@ -102,12 +102,13 @@ def socket_surface(p,axis,rise,z,along,radius,angle):
  q=p+axis*along+normal*radius*math.cos(angle)-axis*(rise*height)
  return Vector((q.x,-q.y,z+along*rise+height))
 
-def hollow_socket(name,p,axis,rise,z,near,far,r,m,inspection=False):
+def hollow_socket(name,p,axis,rise,z,near,far,r,m,inspection=False,flanged=False):
  axis=Vector(axis).normalized();n=16
- along=[near,-3,38,far] if inspection else [near,far]
+ along=[near,-3,38,far] if inspection else [near,near+4,near+12,near+19,far] if flanged else [near,far]
+ outer=[r+12,r+16,r+16,r+6,r+6] if flanged else [r+6]*len(along)
  vertices=[]
- for at in along:
-  for rr in (r+6,r):
+ for at,outer_radius in zip(along,outer):
+  for rr in (outer_radius,r):
    for i in range(n):vertices.append(socket_surface(p,axis,rise,z,at,rr,math.tau*i/n))
  faces=[];roles=[]
  for band in range(len(along)-1):
@@ -128,7 +129,7 @@ def hollow_socket(name,p,axis,rise,z,near,far,r,m,inspection=False):
     j=i+1;faces.append((a+i,a+j,a+n+j,a+n+i));roles.append(0)
   for i in [2,6]:
    a=2*n;b=4*n;faces.append((a+i,a+n+i,b+n+i,b+i));roles.append(0)
- o=mesh(name,vertices,faces,m['edge']);o.data.materials.append(m['dark']);o.data.materials.append(m['copper'])
+ o=mesh(name,vertices,faces,m['steel'] if flanged else m['edge']);o.data.materials.append(m['dark']);o.data.materials.append(m['copper'])
  for face,role in zip(o.data.polygons,roles):face.material_index=role
  return o
 
@@ -599,6 +600,37 @@ def crystal(m,growth=1.):
   disc('crystal captive pin',xx,650,4,113,m['copper'],8)
  socket('condensation',m)
 
+def core_constraint(m,x,y,side):
+ # Handed rear yoke and formed covers share actual return walls.
+ def shape(name,outline,front,back,mat,returns):
+  n=len(outline)
+  vertices=[(x+side*dx,-y-dy,front) for dx,dy in outline]
+  vertices.extend([(x+side*(dx+14),-y-dy-7,back) for dx,dy in outline])
+  center=Vector((sum(a for a,b in outline)/n,sum(b for a,b in outline)/n))
+  vertices.append((x+side*center.x,-y-center.y,front+8))
+  faces=[];roles=[]
+  for i in range(n):
+   j=(i+1)%n;faces.extend([(i,j,2*n),(i,n+i,n+j,j)]);roles.extend([0,1])
+  faces.append(tuple(n+i for i in range(n)));roles.append(1)
+  body=oriented_solid(mesh(name,vertices,faces,mat));body.data.materials.append(returns)
+  for polygon,role in zip(body.data.polygons,roles):polygon.material_index=role
+  edge=body.modifiers.new('constraint formed arris','BEVEL');edge.width=2.2;edge.segments=1
+  body.modifiers.new('constraint face normals','WEIGHTED_NORMAL')
+ outline=[(-40,-44),(-19,-57),(30,-55),(53,-34),(52,31),(25,55),(-22,52),(-40,28)]
+ shape('core side constraint yoke',outline,117,52,m['shade'],m['dark'])
+ upper=[(-27,-43),(-11,-49),(27,-46),(42,-27),(40,-3),(-27,-3)]
+ lower=[(-27,3),(40,3),(38,32),(7,47),(-26,28)]
+ shape('core side constraint upper leaf',upper,149,111,m['armor'],m['shade'])
+ shape('core side constraint lower leaf',lower,149,111,m['armor'],m['shade'])
+ # The service joint is exposed yoke, not paint over a front cover.
+ for dy in (-29,29):
+  xx=x+side*22;yy=y+dy
+  ring('core captive counterbore',xx,yy,5.2,1.7,156,5,m['dark'],segments=8)
+  disc('core captive copper head',xx,yy,3.2,159,m['copper'],8)
+ shape('core side brass latch',[(-2,-52),(27,-52),(28,-43),(2,-42)],160,138,m['copper'],m['dark'])
+ box('core side inner shoe',x-side*28,y,25,45,164,28,m['steel'])
+ box('core restraint contact insert',x-side*38,y,6,33,179,6,m['dark'])
+
 def core(m):
  x,y=594,340
  disc('core seat',x,y,181,14,m['dark'],24)
@@ -654,13 +686,7 @@ def core(m):
   mesh('core plasma strand axial '+str(index),vertices,faces,m['cyan'])
  for side in (-1,1):
   xx=x+side*159
-  armor_box('core side constraint casing',xx,y,96,110,123,70,m['shade'])
-  armor_panel('core side constraint armor',[(xx-side*23,y-46),(xx+side*26,y-45),(xx+side*43,y-28),(xx+side*40,y+37),(xx+side*3,y+50),(xx-side*27,y+28)],143,44,m['armor'])
-  for yy in (y-28,y+28):disc('core restraint captive pin',xx+side*19,yy,3.5,154,m['copper'],8)
-  box('core restraint panel seam',xx+side*9,y,3,25,151,3,m['dark'])
-  box('core side inner shoe',xx-side*28,y,25,45,164,28,m['steel'])
-  box('core restraint contact insert',xx-side*38,y,6,33,179,6,m['dark'])
-  box('core side brass lock',xx+side*11,y-36,29,10,164,12,m['copper'])
+  core_constraint(m,xx,y,side)
  for yy in (-139,139):
   box('core pole shoe',x,y+yy,48,22,114,28,m['dark'])
   box('core pole contact',x,y+yy,26,9,135,8,m['copper'])
@@ -861,7 +887,12 @@ def receiver_u(d):
 def channel_pipe(id,m):
  d=DATA['devices'][id];pts,distances=route_distances(d);normals=[]
  delta=Vector(d['controls'][0])-Vector(d['core_port']);core_axis=delta.normalized();rise=-12.0/delta.length
- hollow_socket(id+' core outlet',Vector(d['core_port']),core_axis,rise,28,-20,26,33,m)
+ hollow_socket(id+' core outlet',Vector(d['core_port']),core_axis,rise,28,-20,26,33,m,flanged=True)
+ # Fasteners share the declared outlet axis and sit on the cast flange.
+ for angle in (math.pi*.15,math.pi*.85,math.pi*1.15,math.pi*1.85):
+  a=socket_surface(Vector(d['core_port']),core_axis,rise,28,-18,43,angle)
+  b=socket_surface(Vector(d['core_port']),core_axis,rise,28,-9,43,angle)
+  rod(id+' core flange fastener',(a.x,-a.y,a.z),(b.x,-b.y,b.z),3.3,m['copper'])
  verticals=[]
  for i,p in enumerate(pts):
   tangent=(pts[min(i+1,len(pts)-1)]-pts[max(0,i-1)]).normalized()
