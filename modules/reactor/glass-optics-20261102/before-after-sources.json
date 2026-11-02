@@ -1,0 +1,14 @@
+{
+  "before_source": "12cec026fdc93b5567ea7f9fc81abfe95612c89c",
+  "before_evidence": "e95549c2c65103be901a4dec0d451de73c3447b2:modules/reactor/ceiling-luminaire-20261102/four-zero.png",
+  "before_image_sha256": "f1f71b7789d20b1ddd17ed4dcb8e40d54a70777045b1b494fe017b0f5da4c180",
+  "after_source": "66b9b9e25abbd87e3533e97a045670fec50e65c7",
+  "after_image_sha256": "3907977705d4dfb1eea0a58940465902b5dc6e6c3e9571aebb1af310af26f7a4",
+  "full_window_crop": [
+    0,
+    65,
+    808,
+    545
+  ],
+  "scope": "visual comparison only, not performance"
+}
