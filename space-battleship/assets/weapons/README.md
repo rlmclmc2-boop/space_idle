@@ -1,6 +1,6 @@
 # 武器弹体素材
 
-2026-09-14 用户要求：三种攻击武器图像应更有区分度并贴合名称。使用内置 image_gen 生成，原始透明 PNG 原样复制入项目；未修改玩法或数值。当前入口为 `src/main.gd`，通过 `SpaceCombatPresentation` 接入保留的原生/GPU 武器表现。
+三种飞行弹体使用内置image_gen生成，保留原始透明PNG。当前入口为 `src/main.gd`，通过 `SpaceCombatPresentation` 接入保留的原生/GPU 武器表现。
 
 - laser-pulse.png：青白细长脉冲光束。
 - cannon-slug.png：铜箍金属弹丸、橙色曳光。
@@ -8,7 +8,7 @@
 
 ## 运行时纹理预算
 
-2026-09-22 绘制审计：三张飞行弹体PNG保留原始分辨率，仅各自的导入设置 `process/size_limit=256`。游戏仍使用原 PROJECTILE_SIZES / PROJECTILE_SCALE / BODY_SCALE，实际画面中的弹体仅几十像素；导入后分别为256×96、256×135、256×102。不修改原PNG、槽位图标、舰体或高科技美术。更改后需QA「大重启」重新导入。原生截图与武器特效专项验证见项目STATUS。
+三张飞行弹体PNG保留原始分辨率，导入尺寸限制由各自.import维护；显示尺寸由当前战斗呈现消费者决定。
 
 ## 槽位武器图标
 
@@ -18,11 +18,11 @@
 - `icons/missile-pod.png`：白色装甲双发射舱、红色中脊与紫蓝状态光。
 - `icons/cannon-turret.png`：深色短炮管、铜箍与琥珀色磁能线圈。
 
-图标不含外层槽位环、舰体、背景、文字或飞行弹体；详细槽位适配约束见 [`docs/ART_GUIDELINES.md`](../../docs/ART_GUIDELINES.md)。
+图标不含外层槽位环、舰体、背景、文字或飞行弹体；详细槽位适配约束见 [M2](../../docs/game-design/art/modules/equipment.md)。
 
 ## 最终生成提示词
 
-显示尺寸由 main.gd 的 PROJECTILE_SIZES（各武器基准尺寸）与 PROJECTILE_SCALE（统一缩放）共同控制。新增武器素材时补充对应纹理和基准尺寸，即可沿用统一缩放；原始PNG保留，便于后续调整。
+原始PNG与生成提示词用于素材重建；显示与挂点要求见[M1](../../docs/game-design/art/modules/battle.md)及对应资产manifest。
 
 ### laser
 
