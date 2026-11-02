@@ -20,6 +20,7 @@ LUMINAIRE_MOUTH_Z=162
 LUMINAIRE_LENS_Z=144
 LUMINAIRE_EXIT_CLEARANCE=12
 LUMINAIRE_TILT=.30
+GLASS_MATERIALS={'core':{'reflectance':.10,'thickness_source':2.5,'absorption':.006,'tint_rgb':[.018,.045,.065]},'weapons':{'reflectance':.10,'thickness_source':1.5,'absorption':.005,'tint_rgb':[.018,.04,.055]},'condensation':{'reflectance':.12,'thickness_source':3.0,'absorption':.0065,'tint_rgb':[.035,.025,.05]}}
 SHARD_CLEARANCE=6.6
 def deck_level(y):return -96+(y-553)*.14
 OUT=Path(os.environ.get('REACTOR_FACETED_BUILD','/tmp/reactor-faceted-build'));OUT.mkdir(parents=True,exist_ok=True)
@@ -287,6 +288,33 @@ def refractory_mouth(m):
   for yy in (450,480):box('furnace feed guide mounting',top,yy,10,8,46,17,m['steel'])
 
 
+def glass_half_shell(name,a,b,across,radii,wall,mat):
+ # A single closed half-shell replaces the old zero-thickness surface.
+ # Front/inner interfaces and cut edges are one mesh, not duplicate layers.
+ a=Vector(a);b=Vector(b);across=Vector(across);front=Vector((0,0,1));axial=8;radial=24
+ vertices=[];stride=radial+1;sheet=(axial+1)*stride
+ for inner in (False,True):
+  rx=radii[0]-(wall if inner else 0);rz=radii[1]-(wall if inner else 0)
+  for j in range(axial+1):
+   center=a.lerp(b,j/axial)
+   for k in range(radial+1):
+    angle=math.pi*k/radial;vertices.append(center+across*(rx*math.cos(angle))+front*(rz*math.sin(angle)))
+ faces=[]
+ for base in (0,sheet):
+  for j in range(axial):
+   for k in range(radial):
+    i=base+j*stride+k;faces.append((i,i+1,i+stride+1,i+stride))
+ curved_count=len(faces)
+ for j in (0,axial):
+  for k in range(radial):
+   i=j*stride+k;faces.append((i,i+1,sheet+i+1,sheet+i))
+ for k in (0,radial):
+  for j in range(axial):
+   i=j*stride+k;faces.append((i,i+stride,sheet+i+stride,sheet+i))
+ shell=oriented_solid(mesh(name,vertices,faces,mat))
+ for i,face in enumerate(shell.data.polygons):face.use_smooth=i<curved_count
+ return shell
+
 def weapon(m,phase=.65):
  mount('weapon',180,313,222,m);box('weapon navy shell',183,204,197,207,40,64,m['dark'])
  armor_panel('weapon left armor',[(81,126),(111,102),(142,109),(136,164),(124,184),(128,264),(103,278),(78,258)],65,25,m['armor'])
@@ -307,7 +335,7 @@ def weapon(m,phase=.65):
  for i,y in enumerate((153,190,227)):
   charge=max(0.,min(1.,(phase/.65)*3-i))
   if charge>0.:rod('weapon charge segment '+str(i),(148,y,68),(214,y,68),14,m['cyan'])
-  rod('weapon chamber glazing '+str(i),(146,y,68),(216,y,68),17,m['field'])
+  glass_half_shell('weapon chamber glazing '+str(i),(146,-y,68),(216,-y,68),(0,-1,0),(17,17),GLASS_MATERIALS['weapons']['thickness_source'],m['field'])
   for xx in (146,207):rod('weapon capacitor endcap',(xx,y,68),(xx+9,y,68),18,m['steel'])
   box('weapon retainer '+str(i),181,y+12,76,8,100,8,m['edge'])
  box('weapon ship bus bed',63,196,74,25,130,8,m['dark'])
@@ -620,11 +648,7 @@ def crystal(m,growth=1.):
   t=(i+.5)/4;c=center[1].lerp(center[2],t);xx,yy,zz=c
   bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1,radius=8,location=(xx,-yy,zz+SHARD_CLEARANCE))
   shard=bpy.context.object;shard.name='crystal body delivery '+str(i);shard.scale=(.75,1.2,.8);shard.data.materials.append(m['violet_light'])
- verts=[]
- for yy in (426,610):
-  for k in range(17):
-   a=math.pi*k/16;verts.append((1017+65*math.cos(a),-yy,77+46*math.sin(a)))
- mesh('crystal containment glass',verts,[(i,i+1,i+18,i+17) for i in range(16)],m['field'])
+ glass_half_shell('crystal containment glass',(1017,-426,77),(1017,-610,77),(1,0,0),(65,46),GLASS_MATERIALS['condensation']['thickness_source'],m['field'])
  for xx in (949,1089):
   box('crystal service recess',xx,632,14,22,112,4,m['dark'])
   disc('crystal captive pin',xx,650,4,113,m['copper'],8)
@@ -668,8 +692,8 @@ def core(m):
  # Open containment volume: dark rear cavity, an internal three-dimensional
  # plasma mass and sparse field paths. There is no opaque facing-gradient disc.
  disc('core rear cavity',x,y,144,24,m['glass'],24)
- bpy.ops.mesh.primitive_uv_sphere_add(segments=24,ring_count=12,radius=145,location=(x,-y,70))
- globe=bpy.context.object;globe.name='core containment glass';globe.scale.z=.82;globe.data.materials.append(m['field'])
+ bpy.ops.mesh.primitive_uv_sphere_add(segments=48,ring_count=24,radius=145,location=(x,-y,70))
+ globe=bpy.context.object;globe.name='core containment glass';globe.scale.z=.95;globe.data.materials.append(m['field'])
  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3,radius=124,location=(x,-y,70))
  plasma=bpy.context.object;plasma.name='core plasma mass';plasma.scale=(.92,1.10,.94);plasma.rotation_euler=(.17,.31,.20)
  plasma.data.materials.append(m['cyan'])
@@ -1177,7 +1201,7 @@ def export_glb():
  growth_path={'conveyor':[[x,-y,z+SHARD_CLEARANCE] for x,y,z in CRYSTAL_CONVEYOR],'split':(Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length/((Vector(CRYSTAL_CONVEYOR[1])-Vector(CRYSTAL_CONVEYOR[0])).length+(Vector(CRYSTAL_CONVEYOR[2])-Vector(CRYSTAL_CONVEYOR[1])).length),
   'focus_author':list(focus),'seed_author':list(seed),'focus_axis_author':[0,-1,0],'seed_axis_author':[0,1,0],'irradiance_author':list((focus+seed)*.5+Vector((0,-10,39.5))),'focus_marker':'condensation/focus_axis_tip','seed_marker':'condensation/growth_seed_origin'}
  room_luminaires=[{'id':id,'marker':'bay/ceiling_'+id+'_emitter','mouth_marker':'bay/ceiling_'+id+'_mouth','lens_marker':'bay/ceiling_'+id+'_lens','position_source3d':list(ceiling_frame(x,y)@Vector((x,-y,LUMINAIRE_MOUTH_Z+LUMINAIRE_EXIT_CLEARANCE))),'mouth_source3d':list(ceiling_frame(x,y)@Vector((x,-y,LUMINAIRE_MOUTH_Z))),'lens_source3d':list(ceiling_frame(x,y)@Vector((x,-y,LUMINAIRE_LENS_Z))),'axis_source3d':list(Matrix.Rotation(LUMINAIRE_TILT,3,'X')@Vector((0,0,1))),'exit_clearance':LUMINAIRE_EXIT_CLEARANCE,'color':'ffb969','energy':1.35,'range':650.,'attenuation':1.35} for id,x,y in ROOM_LIGHTS]
- layout={'room_luminaires':room_luminaires,'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],'work_frames':work_frames,'work_paths':{'condensation':growth_path,'smelting':{'feed_author':[[x,-y,z] for x,y,z in FURNACE_FEED],'throat_irradiance_author':[175,-486,80]}},
+ layout={'glass_materials':GLASS_MATERIALS,'room_luminaires':room_luminaires,'source_size':[W,H],'content_size':[808,835],'scale':835/H,'offset':[(808-W*835/H)/2,0],'work_frames':work_frames,'work_paths':{'condensation':growth_path,'smelting':{'feed_author':[[x,-y,z] for x,y,z in FURNACE_FEED],'throat_irradiance_author':[175,-486,80]}},
   'double_left':{'ids':['weapons','smelting'],'shifts':{'core':[170,0],'core_mount':[170,0],'weapons':[170,0],'smelting':[170,0]},'routes':double_routes},'single_smelting':{'shifts':{'core':[130,0],'core_mount':[130,0],'smelting':[200,-50]},'route':single,'core_marker':'core/power_out_single_smelting','device_marker':'smelting/power_in_smelting','receiver_u':receiver_u(single)},'console':{str(i):console_layout(i) for i in (1,2,3,4)},'parts':parts,'ports':ports,'generator_sha256':GENERATOR_SHA,'asset_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
  (ROOT/'faceted-layout.json').write_text(json.dumps(layout,indent=2))
  print('EXPORTED_FACETED_GEOMETRY',path,layout['asset_sha256'])

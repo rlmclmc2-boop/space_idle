@@ -1,3 +1,30 @@
+uniform float glass_reflectance=.10;
+uniform float glass_thickness=2.5;
+uniform float glass_absorption=.006;
+uniform vec3 glass_tint=vec3(.018,.045,.065);
+uniform vec4 glass_sky_top:source_color=vec4(.1,.2,.3,1.0);
+uniform vec4 glass_sky_horizon:source_color=vec4(.5,.6,.7,1.0);
+uniform vec4 glass_ground_horizon:source_color=vec4(.5,.4,.3,1.0);
+uniform vec4 glass_ground_bottom:source_color=vec4(.05,.1,.15,1.0);
+uniform vec2 glass_environment_energy=vec2(.45,.30);
+uniform float glass_exposure=.85;
+uniform vec3 glass_lamp0_point=vec3(0.0);
+uniform vec3 glass_lamp1_point=vec3(0.0);
+uniform vec4 glass_lamp0_color:source_color=vec4(1.0);
+uniform vec4 glass_lamp1_color:source_color=vec4(1.0);
+uniform vec3 glass_lamp0_shape=vec3(1.35,650.0,1.35);
+uniform vec3 glass_lamp1_shape=vec3(1.35,650.0,1.35);
+uniform vec3 glass_key_direction=vec3(-.5,.4,.7);
+uniform vec4 glass_key_color:source_color=vec4(1.0);
+uniform float glass_key_energy=1.0;
+varying vec4 glass_surface;
+vec3 glass_lamp_reflection(vec3 point,vec3 ray,vec3 lamp_point,vec3 lamp_color,vec3 shape){
+ vec3 delta=lamp_point-point;float distance=max(length(delta),1.0);
+ float align=max(0.0,dot(ray,delta/distance));float a2=align*align;float a4=a2*a2;float a8=a4*a4;
+ float lobe=a8*a8*a8;
+ float falloff=pow(clamp(1.0-distance/shape.y,0.0,1.0),shape.z);
+ return lamp_color*shape.x*falloff*lobe;
+}
 uniform sampler2D plasma_atlas:source_color,filter_linear,repeat_disable;
 uniform vec2 plasma_grid=vec2(8.0,4.0);
 uniform int plasma_frames=32;
@@ -36,11 +63,11 @@ varying vec2 plasma_uv;
 varying vec3 facing_normal;
 varying float axial_position;
 void vertex(){
- axial_position=0.0;
+ axial_position=0.0;glass_surface=vec4(0.0);
  vec4 data=COLOR;
  vec2 planar=data.ba*2.0-1.0;
  facing_normal=normalize(vec3(planar,sqrt(max(0.0,1.0-dot(planar,planar)))));
- if(work_kind==6){facing_normal=normalize(vec3(planar,UV.x));}
+ if(work_kind==6 || work_kind==1){facing_normal=normalize(vec3(planar,UV.x));}
  vec2 screen=(stage_from_canvas*MODEL_MATRIX*vec4(VERTEX,0.0,1.0)).xy;
  float s=835.0/1326.0;
  world_point=vec3((screen.x-(808.0-1187.0*s)*0.5)/s,-screen.y/s,(data.r*255.0*256.0+data.g*255.0)/65535.0*1024.0-256.0);
@@ -105,9 +132,27 @@ void vertex(){
  }
  authored_point=world_point-assembly_offset;
  if(work_kind==4 || work_kind==5 || work_kind==6 || work_kind==16){authored_point=(author_from_source*vec4(authored_point,1.0)).xyz;}
+ if(work_kind==1){
+  vec3 normal=normalize(facing_normal);vec3 ray=reflect(vec3(0.0,0.0,-1.0),normal);
+  float view=max(normal.z,0.0);float edge=1.0-view;float e2=edge*edge;
+  float fresnel=glass_reflectance+(1.0-glass_reflectance)*e2*e2*edge;
+  float path=glass_thickness/max(view,.16);
+  float absorption=1.0-1.0/(1.0+glass_absorption*path);
+  float absorbed_transmission=(1.0-fresnel)*absorption;
+  float alpha=clamp(fresnel+absorbed_transmission,.04,1.0);
+  vec3 sky=mix(glass_sky_horizon.rgb,glass_sky_top.rgb,max(ray.y,0.0))*glass_environment_energy.x;
+  vec3 ground=mix(glass_ground_horizon.rgb,glass_ground_bottom.rgb,max(-ray.y,0.0))*glass_environment_energy.y;
+  vec3 reflected=mix(ground,sky,smoothstep(-.08,.08,ray.y));
+  float key_alignment=max(0.0,dot(ray,glass_key_direction));
+  float k2=key_alignment*key_alignment;float k4=k2*k2;float k8=k4*k4;
+  reflected+=glass_key_color.rgb*glass_key_energy*k8*k8*k8;
+  reflected+=glass_lamp_reflection(world_point,ray,glass_lamp0_point,glass_lamp0_color.rgb,glass_lamp0_shape);
+  reflected+=glass_lamp_reflection(world_point,ray,glass_lamp1_point,glass_lamp1_color.rgb,glass_lamp1_shape);
+  glass_surface=vec4((reflected*glass_exposure*fresnel+glass_tint*absorbed_transmission)/alpha,alpha);
+ }
 }
 void fragment(){
- if(work_kind==6 && facing_normal.z<=0.0){discard;}
+ if((work_kind==6 || work_kind==1) && facing_normal.z<=0.0){discard;}
  if(depth_ready){
   float s=835.0/1326.0;
   vec2 local=vec2(world_point.x*s+(808.0-1187.0*s)*0.5,-world_point.y*s);
@@ -123,7 +168,7 @@ void fragment(){
   if(squared<784.0 && point.z<100.0+sqrt(784.0-squared)){discard;}
  }
 
- float strength=load_fraction>0.0?mix(0.58,1.0,sqrt(load_fraction)):0.0;
+ float strength=(work_kind!=1 && load_fraction>0.0)?mix(0.58,1.0,sqrt(load_fraction)):0.0;
  vec3 color=base_color.rgb;float opacity=1.0;
  float received_age=1.0;
  float response=0.0;
@@ -135,10 +180,7 @@ void fragment(){
   response=smoothstep(.045,.085,received_age)*(1.0-smoothstep(.13,.22,received_age));
  }
  if(work_kind==1){
-  float rim=pow(1.0-abs(facing_normal.z),2.0);
-  color=mix(vec3(0.01,0.12,0.22),vec3(0.05,0.65,0.9),rim);
-  if(work_zone==1){color=mix(vec3(.03,.045,.07),vec3(.35,.20,.55),rim*strength);}
-  opacity=0.035+rim*(0.12+0.25*strength);
+  color=glass_surface.rgb;opacity=glass_surface.a;
  }else if(work_kind==2){
   float radius=length(point.xy-vec2(594.0,-340.0));
   float charge=smoothstep(0.0,.43,cycle);

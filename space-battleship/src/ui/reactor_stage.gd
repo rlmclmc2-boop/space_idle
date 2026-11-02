@@ -24,6 +24,9 @@ var _double_mode: bool=false
 var _baker: SubViewport
 var _asset: Node3D
 var _environment: Environment
+var _reflection_sky: ProceduralSkyMaterial
+var _room_lamps: Array[OmniLight3D]=[]
+var _key_light: DirectionalLight3D
 var _core_lamp: OmniLight3D
 var _work_lamps: Dictionary={}
 var _throat_lamp: OmniLight3D
@@ -86,6 +89,7 @@ func _init() -> void:
 	# The same broad cool hull / warm deck environment is reflected by metal.
 	# This is initialized once for the cached structure, never per work tick.
 	var sky_material:=ProceduralSkyMaterial.new()
+	_reflection_sky=sky_material
 	sky_material.sky_top_color=Color("20394f")
 	sky_material.sky_horizon_color=Color("9eb8c8")
 	sky_material.ground_horizon_color=Color("b6a17c")
@@ -101,6 +105,7 @@ func _init() -> void:
 	environment_node.environment=_environment
 	_baker.add_child(environment_node)
 	var light:=DirectionalLight3D.new()
+	_key_light=light
 	light.light_color=Color("fff0d4")
 	light.light_energy=1.0
 	light.light_angular_distance=.6
@@ -121,6 +126,7 @@ func _init() -> void:
 		luminaire.shadow_enabled=true
 		luminaire.shadow_opacity=.45
 		_baker.add_child(luminaire)
+		_room_lamps.append(luminaire)
 	_core_lamp=OmniLight3D.new()
 	_core_lamp.light_color=Color("5bd8ff")
 	_core_lamp.light_energy=0.0
@@ -302,7 +308,7 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 		projected[Mesh.ARRAY_COLOR]=colors
 		projected[Mesh.ARRAY_INDEX]=indices
 		projected[Mesh.ARRAY_TEX_UV]=arrays[Mesh.ARRAY_TEX_UV]
-		if kind==6:
+		if kind in [1,6]:
 			var normal_z:=PackedVector2Array()
 			for normal in world_normals:normal_z.append(Vector2(normal.z,0.0))
 			projected[Mesh.ARRAY_TEX_UV]=normal_z
@@ -353,7 +359,29 @@ func _prepare_mesh(node: MeshInstance3D,key: String,world: Transform3D) -> void:
 					var q: Array=path.conveyor[j]
 					material.set_shader_parameter(["transport_start","transport_middle","transport_end"][j],Vector3(q[0],q[1],q[2]))
 				material.set_shader_parameter("transport_split",float(path.split))
-		if kind==1:material.set_shader_parameter("work_zone",1 if "crystal containment" in title else 0)
+		if kind==1:
+			material.set_meta("fixed_glass",true)
+			var profile: Dictionary=_layout.glass_materials[key]
+			material.set_shader_parameter("glass_thickness",float(profile.thickness_source))
+			material.set_shader_parameter("glass_reflectance",float(profile.reflectance))
+			material.set_shader_parameter("glass_exposure",_environment.tonemap_exposure)
+			material.set_shader_parameter("glass_absorption",float(profile.absorption))
+			var tint: Array=profile.tint_rgb
+			material.set_shader_parameter("glass_tint",Vector3(tint[0],tint[1],tint[2]))
+			material.set_shader_parameter("glass_sky_top",_reflection_sky.sky_top_color)
+			material.set_shader_parameter("glass_sky_horizon",_reflection_sky.sky_horizon_color)
+			material.set_shader_parameter("glass_ground_horizon",_reflection_sky.ground_horizon_color)
+			material.set_shader_parameter("glass_ground_bottom",_reflection_sky.ground_bottom_color)
+			material.set_shader_parameter("glass_environment_energy",Vector2(_reflection_sky.sky_energy_multiplier,_reflection_sky.ground_energy_multiplier))
+			material.set_shader_parameter("glass_key_direction",_key_light.basis.z.normalized())
+			material.set_shader_parameter("glass_key_color",_key_light.light_color)
+			material.set_shader_parameter("glass_key_energy",_key_light.light_energy)
+			for lamp_index in _room_lamps.size():
+				var lamp: OmniLight3D=_room_lamps[lamp_index]
+				var prefix: String="glass_lamp"+str(lamp_index)
+				material.set_shader_parameter(prefix+"_point",lamp.position)
+				material.set_shader_parameter(prefix+"_color",lamp.light_color)
+				material.set_shader_parameter(prefix+"_shape",Vector3(lamp.light_energy/SOURCE_LIGHT_GAIN,lamp.omni_range,lamp.omni_attenuation))
 		if kind==10:
 			var id: String=title.get_slice("packet ",1)
 			var target: Array=_layout.ports[id].core_interface_source3d
@@ -415,19 +443,22 @@ func show_snapshot(ids: Array,loads: Dictionary) -> void:
 	if float(loads.get("core",0.0))>0.0 and float(previous.get("core",0.0))<=0.0:
 		_phase=0.0
 		for key in ["core"]+ids+ids.map(func(id):return _pipe_key(str(id))):
-			for material in _materials[key]:material.set_shader_parameter("phase",_phase)
+			for material in _materials[key]:
+				if not material.has_meta("fixed_glass"):material.set_shader_parameter("phase",_phase)
 	for id in IDS:
 		_groups[id].visible=id in ids
 		var load: float=float(loads.get(id,0.0)) if id in ids else 0.0
 		if load>0.0 and float(previous.get(id,0.0))<=0.0:
 			_age[id]=0.0
-			for material in _materials[id]:material.set_shader_parameter("powered_at",_phase)
+			for material in _materials[id]:
+				if not material.has_meta("fixed_glass"):material.set_shader_parameter("powered_at",_phase)
 		for key in [id,_pipe_key(id)]:
-			for material in _materials[key]:material.set_shader_parameter("load_fraction",visibility_power(load))
+			for material in _materials[key]:
+				if not material.has_meta("fixed_glass"):material.set_shader_parameter("load_fraction",visibility_power(load))
 			for mechanism in _mechanisms[key]:mechanism.node.visible=load>0.0 or mechanism.kind==1
 	var core_load: float=visibility_power(float(loads.get("core",0.0)))
 	for material in _materials.core:
-		material.set_shader_parameter("load_fraction",core_load)
+		if not material.has_meta("fixed_glass"):material.set_shader_parameter("load_fraction",core_load)
 		if material.has_meta("outlet"):material.set_shader_parameter("outlet_enabled",str(material.get_meta("outlet")) in ids)
 	for mechanism in _mechanisms.core:mechanism.node.visible=core_load>0.0 or mechanism.kind==1
 	_update_core_light()
@@ -599,7 +630,8 @@ func _animate_mechanisms() -> void:
 				var event_time: float=(floorf(age_cycles)+arrival)*4.8
 				var shown: bool=age_cycles>=0.0 and event_time+0.001>=_phase-age and fposmod(age_cycles,1.0)<.22
 				if part.visible!=shown:part.visible=shown
-		for material in _materials[id]:material.set_shader_parameter("formation",minf(age/(3.5 if id=="condensation" else 1.6),1.0))
+		for material in _materials[id]:
+			if not material.has_meta("fixed_glass"):material.set_shader_parameter("formation",minf(age/(3.5 if id=="condensation" else 1.6),1.0))
 
 	for mechanism in _mechanisms.core:
 		if mechanism.kind==10:
@@ -619,8 +651,10 @@ func advance_visual_clock(game_time: float,paused: bool) -> bool:
 		if float(_loads.get(id,0.0))<=0.0:continue
 		_age[id]=float(_age[id])+elapsed
 		for key in [id,_pipe_key(id)]:
-			for material in _materials[key]:material.set_shader_parameter("phase",_phase)
-	for material in _materials.core:material.set_shader_parameter("phase",_phase)
+			for material in _materials[key]:
+				if not material.has_meta("fixed_glass"):material.set_shader_parameter("phase",_phase)
+	for material in _materials.core:
+		if not material.has_meta("fixed_glass"):material.set_shader_parameter("phase",_phase)
 	_animate_mechanisms()
 	diagnostics.active_frames+=1
 	return true

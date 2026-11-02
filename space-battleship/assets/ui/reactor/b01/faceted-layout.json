@@ -1,4 +1,36 @@
 {
+  "glass_materials": {
+    "core": {
+      "reflectance": 0.1,
+      "thickness_source": 2.5,
+      "absorption": 0.006,
+      "tint_rgb": [
+        0.018,
+        0.045,
+        0.065
+      ]
+    },
+    "weapons": {
+      "reflectance": 0.1,
+      "thickness_source": 1.5,
+      "absorption": 0.005,
+      "tint_rgb": [
+        0.018,
+        0.04,
+        0.055
+      ]
+    },
+    "condensation": {
+      "reflectance": 0.12,
+      "thickness_source": 3.0,
+      "absorption": 0.0065,
+      "tint_rgb": [
+        0.035,
+        0.025,
+        0.05
+      ]
+    }
+  },
   "room_luminaires": [
     {
       "id": "port",
@@ -842,6 +874,6 @@
       "receiver_u": 0.768051532791687
     }
   },
-  "generator_sha256": "76a261c729bc5dc16758972310007b73c90425e4928225008fdbdc9fb3dbab9e",
-  "asset_sha256": "2738bde6c9ceead1604360a31a2d19f90ba0ea84ad0916ba0caa329ac98c0a97"
+  "generator_sha256": "6e23127339c4c91eee0576144c5b32d42449fb136da83e0690ceebf10b2a4aca",
+  "asset_sha256": "9f7c34d011d1658b39153f1886692b6c4738b669c5fc39853114102aaceda615"
 }
